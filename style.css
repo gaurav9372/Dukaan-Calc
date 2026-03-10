@@ -126,6 +126,9 @@ h1 {
 }
 
 .back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 42px;
   height: 42px;
   border-radius: 50%;
