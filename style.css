@@ -258,7 +258,7 @@ h1 {
   width: min(400px, 100%);
   height: var(--keyboard-height);
   padding: 12px 14px 14px;
-  background: #0c0d10;
+  background: #070709;
   box-shadow: none;
   transform: translateX(-50%) translateY(100%);
   transition: transform 0.25s ease;
@@ -280,7 +280,7 @@ h1 {
 .key {
   border-radius: 6px;
   border: 1px solid #2b2e34;
-  background: #1b1c1f;
+  background: #0e0f12;
   color: var(--text);
   font-size: 1.2rem;
   font-weight: 600;
