@@ -395,6 +395,7 @@ document.addEventListener("pointerdown", (event) => {
 });
 
 const resetButtons = document.querySelectorAll("[data-reset]");
+const footerEls = Array.from(document.querySelectorAll(".screen-footer"));
 resetButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const target = button.dataset.reset;
@@ -419,6 +420,17 @@ resetButtons.forEach((button) => {
   });
 });
 
+const updateFooterHeight = () => {
+  if (!footerEls.length) return;
+  const maxHeight = footerEls.reduce(
+    (max, el) => Math.max(max, el.offsetHeight),
+    0
+  );
+  if (maxHeight > 0) {
+    document.documentElement.style.setProperty("--footer-h", `${maxHeight}px`);
+  }
+};
+
 const resetAll = () => {
   discountPrice.value = defaultDiscount.price;
   discountRate.value = defaultDiscount.rate;
@@ -435,6 +447,12 @@ calcDiscount();
 calcBreakdown();
 renderProducts(defaultProducts);
 setupNumberInputs();
+updateFooterHeight();
+
+if (window.ResizeObserver && footerEls.length) {
+  const footerObserver = new ResizeObserver(updateFooterHeight);
+  footerEls.forEach((el) => footerObserver.observe(el));
+}
 
 const setViewportHeight = () => {
   const vv = window.visualViewport;
@@ -449,3 +467,5 @@ if (window.visualViewport) {
 }
 window.addEventListener("resize", setViewportHeight);
 window.addEventListener("orientationchange", setViewportHeight);
+window.addEventListener("resize", updateFooterHeight);
+window.addEventListener("orientationchange", updateFooterHeight);

@@ -15,7 +15,7 @@
   --radius: 18px;
   --font: "Space Grotesk", system-ui, sans-serif;
   --keyboard-height: clamp(180px, 28vh, 240px);
-  --footer-height: 110px;
+  --footer-h: 110px;
 }
 
 * {
@@ -27,16 +27,19 @@
 
 body {
   background: var(--bg);
+  height: 100vh;
   height: var(--vvh, 100dvh);
   display: flex;
   align-items: flex-start;
   justify-content: center;
   padding: 0;
   color: var(--text);
+  overflow: hidden;
 }
 
 .app {
   width: min(400px, 100%);
+  height: 100vh;
   height: var(--vvh, 100dvh);
   background: transparent;
   border-radius: 0;
@@ -44,6 +47,7 @@ body {
   box-shadow: none;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 main {
@@ -246,8 +250,11 @@ h1 {
 .screen-body {
   display: grid;
   gap: 18px;
-  flex: 0 0 auto;
-  padding-bottom: calc(var(--footer-height) + 12px);
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  align-content: start;
+  padding-bottom: calc(var(--footer-h) + env(safe-area-inset-bottom, 0px) + 12px);
 }
 
 .screen-footer {
@@ -272,7 +279,7 @@ h1 {
 }
 
 .keyboard-visible .screen-body {
-  padding-bottom: calc(var(--footer-height) + var(--keyboard-height) + 12px);
+  padding-bottom: calc(var(--footer-h) + var(--keyboard-height) + env(safe-area-inset-bottom, 0px) + 12px);
 }
 
 .keyboard {
@@ -452,6 +459,6 @@ h1 {
 
 @media (max-width: 480px) {
   main {
-    min-height: 620px;
+    min-height: 0;
   }
 }
