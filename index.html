@@ -40,7 +40,7 @@
         </div>
       </section>
 
-      <section class="screen" data-screen="discount">
+      <section class="screen calc" data-screen="discount">
         <div class="screen-header">
           <button class="back" data-back aria-label="Back">
             <img class="back-icon" src="Icons/back.svg" alt="" />
@@ -48,36 +48,40 @@
           <h2>Discount Calculator</h2>
         </div>
 
-        <div class="card minimal">
-          <label class="field">
-            <span>Price</span>
-            <div class="input-group">
-              <input type="number" min="0" step="0.01" id="discount-price" value="600" />
-              <span class="unit">₹</span>
-            </div>
-          </label>
+        <div class="screen-body">
+          <div class="card minimal">
+            <label class="field">
+              <span>Price</span>
+              <div class="input-group">
+                <input type="number" min="0" step="0.01" id="discount-price" value="600" />
+                <span class="unit">₹</span>
+              </div>
+            </label>
 
-          <label class="field">
-            <span>Discount</span>
-            <div class="input-group">
-              <input type="number" min="0" step="0.01" id="discount-rate" value="10" />
-              <span class="unit">%</span>
-            </div>
-          </label>
-        </div>
-
-        <div class="result">
-          <span class="result-label">New Price</span>
-          <div class="input-group output">
-            <input type="text" id="discount-result" readonly />
-            <span class="unit">₹</span>
+            <label class="field">
+              <span>Discount</span>
+              <div class="input-group">
+                <input type="number" min="0" step="0.01" id="discount-rate" value="10" />
+                <span class="unit">%</span>
+              </div>
+            </label>
           </div>
         </div>
 
-        <button class="reset" data-reset="discount">Reset</button>
+        <div class="screen-footer">
+          <div class="result">
+            <span class="result-label">New Price</span>
+            <div class="input-group output">
+              <input type="text" id="discount-result" readonly />
+              <span class="unit">₹</span>
+            </div>
+          </div>
+
+          <button class="reset" data-reset="discount">Reset</button>
+        </div>
       </section>
 
-      <section class="screen" data-screen="breakdown">
+      <section class="screen calc" data-screen="breakdown">
         <div class="screen-header">
           <button class="back" data-back aria-label="Back">
             <img class="back-icon" src="Icons/back.svg" alt="" />
@@ -85,36 +89,40 @@
           <h2>Price Breakdown</h2>
         </div>
 
-        <div class="card minimal">
-          <label class="field">
-            <span>Price</span>
-            <div class="input-group">
-              <input type="number" min="0" step="0.01" id="breakdown-price" value="795" />
-              <span class="unit">₹</span>
-            </div>
-          </label>
+        <div class="screen-body">
+          <div class="card minimal">
+            <label class="field">
+              <span>Price</span>
+              <div class="input-group">
+                <input type="number" min="0" step="0.01" id="breakdown-price" value="795" />
+                <span class="unit">₹</span>
+              </div>
+            </label>
 
-          <label class="field">
-            <span>Weight</span>
-            <div class="input-group">
-              <input type="number" min="0" step="0.001" id="breakdown-weight" value="1.240" />
-              <span class="unit">Kg</span>
-            </div>
-          </label>
-        </div>
-
-        <div class="result">
-          <span class="result-label">Price / Kg</span>
-          <div class="input-group output">
-            <input type="text" id="breakdown-result" readonly />
-            <span class="unit">₹</span>
+            <label class="field">
+              <span>Weight</span>
+              <div class="input-group">
+                <input type="number" min="0" step="0.001" id="breakdown-weight" value="1.240" />
+                <span class="unit">Kg</span>
+              </div>
+            </label>
           </div>
         </div>
 
-        <button class="reset" data-reset="breakdown">Reset</button>
+        <div class="screen-footer">
+          <div class="result">
+            <span class="result-label">Price / Kg</span>
+            <div class="input-group output">
+              <input type="text" id="breakdown-result" readonly />
+              <span class="unit">₹</span>
+            </div>
+          </div>
+
+          <button class="reset" data-reset="breakdown">Reset</button>
+        </div>
       </section>
 
-      <section class="screen" data-screen="fertilizer">
+      <section class="screen calc" data-screen="fertilizer">
         <div class="screen-header">
           <button class="back" data-back aria-label="Back">
             <img class="back-icon" src="Icons/back.svg" alt="" />
@@ -122,21 +130,25 @@
           <h2>Fertilizer Price Calculator</h2>
         </div>
 
-        <div class="product-list" id="product-list">
-          <!-- Products inserted by JS -->
-        </div>
-
-        <button class="ghost" id="add-product">Add Product</button>
-
-        <div class="result">
-          <span class="result-label">Total Price</span>
-          <div class="input-group output">
-            <input type="text" id="fertilizer-total" readonly />
-            <span class="unit">₹</span>
+        <div class="screen-body">
+          <div class="product-list" id="product-list">
+            <!-- Products inserted by JS -->
           </div>
+
+          <button class="ghost" id="add-product">Add Product</button>
         </div>
 
-        <button class="reset" data-reset="fertilizer">Reset</button>
+        <div class="screen-footer">
+          <div class="result">
+            <span class="result-label">Total Price</span>
+            <div class="input-group output">
+              <input type="text" id="fertilizer-total" readonly />
+              <span class="unit">₹</span>
+            </div>
+          </div>
+
+          <button class="reset" data-reset="fertilizer">Reset</button>
+        </div>
       </section>
     </main>
   </div>
