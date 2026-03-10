@@ -2,13 +2,9 @@
 const menuButtons = document.querySelectorAll("[data-go]");
 const backButtons = document.querySelectorAll("[data-back]");
 
-const defaultDiscount = { price: 600, rate: 10 };
-const defaultBreakdown = { price: 795, weight: 1.24 };
-const defaultProducts = [
-  { price: 10, weight: 2.5 },
-  { price: 40, weight: 4 },
-  { price: 40, weight: 4 },
-];
+const defaultDiscount = { price: 0, rate: 0 };
+const defaultBreakdown = { price: 0, weight: 0 };
+const defaultProducts = [{ price: 0, weight: 0 }];
 
 const discountPrice = document.getElementById("discount-price");
 const discountRate = document.getElementById("discount-rate");
