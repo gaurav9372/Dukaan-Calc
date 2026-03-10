@@ -75,7 +75,8 @@ h1 {
   border: 1px solid #2f4b5f;
   color: var(--text);
   padding: 18px;
-  border-radius: var(--radius);
+  border-radius: 6px;
+  min-height: 52px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -129,8 +130,8 @@ h1 {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 52px;
+  height: 52px;
   background: transparent;
   border: none;
   padding: 0;
@@ -139,18 +140,23 @@ h1 {
 }
 
 .back-icon {
-  width: 42px;
-  height: 42px;
+  width: 46px;
+  height: 46px;
   display: block;
 }
 
 .card {
   background: var(--panel);
   padding: 18px;
-  border-radius: var(--radius);
+  border-radius: 6px;
   display: grid;
   gap: 16px;
   border: 1px solid var(--border);
+}
+
+.card.minimal {
+  background: rgba(255, 255, 255, 0.02);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .field {
@@ -165,8 +171,9 @@ h1 {
   align-items: center;
   background: #3a3b3f;
   border: 1px solid #4b4d52;
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 6px;
+  height: 52px;
+  padding: 0 12px;
 }
 
 .input-group input {
@@ -176,6 +183,7 @@ h1 {
   color: var(--text);
   font-size: 1rem;
   outline: none;
+  height: 100%;
 }
 
 .input-group .unit {
@@ -202,8 +210,9 @@ h1 {
 .reset {
   width: 100%;
   margin-top: 18px;
-  padding: 14px;
-  border-radius: 12px;
+  height: 52px;
+  padding: 0 14px;
+  border-radius: 6px;
   border: none;
   background: #7a3c3c;
   color: var(--text);
@@ -218,9 +227,9 @@ h1 {
 }
 
 .product-card {
-  background: var(--panel-2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
   padding: 16px;
   display: grid;
   gap: 12px;
@@ -246,9 +255,10 @@ h1 {
 
 .ghost {
   width: 100%;
-  padding: 12px;
+  height: 52px;
+  padding: 0 12px;
   border: 1px dashed #4e5056;
-  border-radius: 12px;
+  border-radius: 6px;
   background: transparent;
   color: var(--text);
   cursor: pointer;
