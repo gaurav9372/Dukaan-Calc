@@ -17,6 +17,32 @@ const breakdownResult = document.getElementById("breakdown-result");
 const productList = document.getElementById("product-list");
 const addProductButton = document.getElementById("add-product");
 const fertilizerTotal = document.getElementById("fertilizer-total");
+const keyboard = document.getElementById("keyboard");
+
+let activeInput = null;
+
+const showKeyboard = () => {
+  document.body.classList.add("keyboard-visible");
+};
+
+const hideKeyboard = () => {
+  document.body.classList.remove("keyboard-visible");
+  activeInput = null;
+};
+
+const syncInput = (input) => {
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+};
+
+const setActiveInput = (input) => {
+  activeInput = input;
+  showKeyboard();
+  input.focus();
+  if (input.value === "0") {
+    input.value = "";
+    syncInput(input);
+  }
+};
 
 const showScreen = (name) => {
   screens.forEach((screen) => {
@@ -28,12 +54,13 @@ const showScreen = (name) => {
     const firstInput = active.querySelector('input[type="number"]');
     if (firstInput) {
       setTimeout(() => {
-        firstInput.focus();
-        if (firstInput.value === "0") {
-          firstInput.value = "";
-        }
+        setActiveInput(firstInput);
       }, 0);
     }
+  }
+
+  if (name === "home") {
+    hideKeyboard();
   }
 };
 
@@ -70,14 +97,14 @@ const renderProducts = (products) => {
         <label class="field">
           <span>Price</span>
           <div class="input-group">
-            <input type="number" min="0" step="0.01" value="${product.price}" data-field="price" />
+            <input type="number" min="0" step="0.01" value="${product.price}" data-field="price" readonly inputmode="none" />
             <span class="unit">₹</span>
           </div>
         </label>
         <label class="field">
           <span>Weight</span>
           <div class="input-group">
-            <input type="number" min="0" step="0.01" value="${product.weight}" data-field="weight" />
+            <input type="number" min="0" step="0.01" value="${product.weight}" data-field="weight" readonly inputmode="none" />
             <span class="unit">Kg</span>
           </div>
         </label>
@@ -88,6 +115,7 @@ const renderProducts = (products) => {
     productList.appendChild(card);
   });
 
+  setupNumberInputs();
   updateFertilizerTotal();
 };
 
@@ -121,18 +149,6 @@ backButtons.forEach((button) => {
   input.addEventListener("input", calcBreakdown);
 });
 
-document.addEventListener(
-  "focusin",
-  (event) => {
-    if (event.target.matches('input[type="number"]')) {
-      if (event.target.value === "0") {
-        event.target.value = "";
-      }
-    }
-  },
-  true
-);
-
 productList.addEventListener("input", (event) => {
   if (event.target.matches("input")) {
     updateFertilizerTotal();
@@ -149,6 +165,55 @@ addProductButton.addEventListener("click", () => {
     })),
     newProduct,
   ]);
+});
+
+const setupNumberInputs = () => {
+  document.querySelectorAll('input[type="number"]').forEach((input) => {
+    if (input.dataset.keyboardReady) return;
+    input.dataset.keyboardReady = "true";
+    input.setAttribute("readonly", "readonly");
+    input.setAttribute("inputmode", "none");
+    input.addEventListener("focus", () => setActiveInput(input));
+    input.addEventListener("click", () => setActiveInput(input));
+    input.addEventListener("blur", () => {
+      if (input.value === "") {
+        input.value = "0";
+        syncInput(input);
+      }
+    });
+  });
+};
+
+const handleKey = (key) => {
+  if (!activeInput) return;
+  let value = activeInput.value;
+
+  if (key === "backspace") {
+    value = value.slice(0, -1);
+  } else if (key === "enter") {
+    activeInput.blur();
+    hideKeyboard();
+    return;
+  } else if (key === ".") {
+    if (!value.includes(".")) {
+      value = value === "" ? "0." : `${value}.`;
+    }
+  } else {
+    value = value === "0" ? key : `${value}${key}`;
+  }
+
+  activeInput.value = value;
+  syncInput(activeInput);
+};
+
+keyboard.addEventListener("pointerdown", (event) => {
+  event.preventDefault();
+});
+
+keyboard.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-key]");
+  if (!button) return;
+  handleKey(button.dataset.key);
 });
 
 const resetButtons = document.querySelectorAll("[data-reset]");
@@ -174,20 +239,12 @@ resetButtons.forEach((button) => {
 calcDiscount();
 calcBreakdown();
 renderProducts(defaultProducts);
+setupNumberInputs();
 
 const setViewportHeight = () => {
   const vv = window.visualViewport;
   const height = Math.round(vv ? vv.height : window.innerHeight);
   document.documentElement.style.setProperty("--vvh", `${height}px`);
-
-  if (vv) {
-    const keyboard = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
-    document.documentElement.style.setProperty("--kb", `${Math.round(keyboard)}px`);
-    document.body.classList.toggle("keyboard-open", keyboard > 0);
-  } else {
-    document.documentElement.style.setProperty("--kb", "0px");
-    document.body.classList.remove("keyboard-open");
-  }
 };
 
 setViewportHeight();

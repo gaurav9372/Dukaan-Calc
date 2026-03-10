@@ -53,7 +53,7 @@
             <label class="field">
               <span>Price</span>
               <div class="input-group">
-              <input type="number" min="0" step="0.01" id="discount-price" value="0" />
+              <input type="number" min="0" step="0.01" id="discount-price" value="0" readonly inputmode="none" />
                 <span class="unit">₹</span>
               </div>
             </label>
@@ -61,7 +61,7 @@
             <label class="field">
               <span>Discount</span>
               <div class="input-group">
-              <input type="number" min="0" step="0.01" id="discount-rate" value="0" />
+              <input type="number" min="0" step="0.01" id="discount-rate" value="0" readonly inputmode="none" />
                 <span class="unit">%</span>
               </div>
             </label>
@@ -96,7 +96,7 @@
             <label class="field">
               <span>Price</span>
               <div class="input-group">
-              <input type="number" min="0" step="0.01" id="breakdown-price" value="0" />
+              <input type="number" min="0" step="0.01" id="breakdown-price" value="0" readonly inputmode="none" />
                 <span class="unit">₹</span>
               </div>
             </label>
@@ -104,7 +104,7 @@
             <label class="field">
               <span>Weight</span>
               <div class="input-group">
-              <input type="number" min="0" step="0.001" id="breakdown-weight" value="0" />
+              <input type="number" min="0" step="0.001" id="breakdown-weight" value="0" readonly inputmode="none" />
                 <span class="unit">Kg</span>
               </div>
             </label>
@@ -157,6 +157,30 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <div class="keyboard" id="keyboard" aria-hidden="true">
+    <div class="keyboard-grid">
+      <button class="key" data-key="1">1</button>
+      <button class="key" data-key="2">2</button>
+      <button class="key" data-key="3">3</button>
+      <div class="key spacer" aria-hidden="true"></div>
+
+      <button class="key" data-key="4">4</button>
+      <button class="key" data-key="5">5</button>
+      <button class="key" data-key="6">6</button>
+      <div class="key spacer" aria-hidden="true"></div>
+
+      <button class="key" data-key="7">7</button>
+      <button class="key" data-key="8">8</button>
+      <button class="key" data-key="9">9</button>
+      <button class="key key-danger" data-key="backspace" aria-label="Backspace">⌫</button>
+
+      <div class="key spacer" aria-hidden="true"></div>
+      <button class="key" data-key="0">0</button>
+      <button class="key" data-key=".">.</button>
+      <button class="key key-primary" data-key="enter" aria-label="Done">→</button>
+    </div>
   </div>
 
   <script src="app.js"></script>

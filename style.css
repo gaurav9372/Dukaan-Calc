@@ -14,6 +14,7 @@
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   --radius: 18px;
   --font: "Space Grotesk", system-ui, sans-serif;
+  --keyboard-height: clamp(240px, 40vh, 340px);
 }
 
 * {
@@ -42,6 +43,10 @@ body {
   box-shadow: none;
   display: flex;
   flex-direction: column;
+}
+
+.keyboard-visible .app {
+  padding-bottom: calc(var(--keyboard-height) + 12px + env(safe-area-inset-bottom, 0px));
 }
 
 main {
@@ -228,10 +233,66 @@ h1 {
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
-.keyboard-open .screen-footer {
-  transform: translateY(calc(-1 * var(--kb, 0px)));
+.keyboard {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: min(400px, 100%);
+  height: var(--keyboard-height);
+  padding: 16px 16px 20px;
+  background: #0c0d10;
+  box-shadow: 0 -24px 48px rgba(0, 0, 0, 0.6);
+  transform: translateX(-50%) translateY(100%);
+  transition: transform 0.25s ease;
+  z-index: 50;
 }
 
+.keyboard-visible .keyboard {
+  transform: translateX(-50%) translateY(0);
+}
+
+.keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  gap: 12px;
+  height: 100%;
+}
+
+.key {
+  border-radius: 6px;
+  border: 1px solid #2b2e34;
+  background: #1b1c1f;
+  color: var(--text);
+  font-size: 1.4rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.key:active {
+  transform: translateY(1px);
+  background: #23252b;
+}
+
+.key.spacer {
+  background: transparent;
+  border: none;
+  cursor: default;
+}
+
+.key-danger {
+  background: #7a3c3c;
+  border-color: #8f4a4a;
+}
+
+.key-primary {
+  background: #244054;
+  border-color: #2f4b5f;
+}
 .footer-row {
   display: flex;
   gap: 12px;
