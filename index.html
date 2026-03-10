@@ -1,0 +1,147 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dukaan Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <div class="status-pill">
+        <span class="dot"></span>
+        <span>Dukaan Calculator</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="screen active" data-screen="home">
+        <h1>Dukaan Calculator</h1>
+        <p class="subtitle">Choose a mini calculator to get started.</p>
+        <div class="menu">
+          <button class="menu-card" data-go="discount">
+            <div>
+              <span class="menu-title">Discount Calculator</span>
+              <span class="menu-desc">Quickly apply discounts to any price.</span>
+            </div>
+            <span class="menu-arrow">→</span>
+          </button>
+          <button class="menu-card" data-go="breakdown">
+            <div>
+              <span class="menu-title">Price Breakdown</span>
+              <span class="menu-desc">Find cost per kg or unit.</span>
+            </div>
+            <span class="menu-arrow">→</span>
+          </button>
+          <button class="menu-card accent" data-go="fertilizer">
+            <div>
+              <span class="menu-title">Fertilizer Price Calculator</span>
+              <span class="menu-desc">Sum multiple products in seconds.</span>
+            </div>
+            <span class="menu-arrow">→</span>
+          </button>
+        </div>
+      </section>
+
+      <section class="screen" data-screen="discount">
+        <div class="screen-header">
+          <button class="back" data-back aria-label="Back">←</button>
+          <h2>Discount Calculator</h2>
+        </div>
+
+        <div class="card">
+          <label class="field">
+            <span>Price</span>
+            <div class="input-group">
+              <input type="number" min="0" step="0.01" id="discount-price" value="600" />
+              <span class="unit">₹</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Discount</span>
+            <div class="input-group">
+              <input type="number" min="0" step="0.01" id="discount-rate" value="10" />
+              <span class="unit">%</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="result">
+          <span class="result-label">New Price</span>
+          <div class="input-group output">
+            <input type="text" id="discount-result" readonly />
+            <span class="unit">₹</span>
+          </div>
+        </div>
+
+        <button class="reset" data-reset="discount">Reset</button>
+      </section>
+
+      <section class="screen" data-screen="breakdown">
+        <div class="screen-header">
+          <button class="back" data-back aria-label="Back">←</button>
+          <h2>Price Breakdown</h2>
+        </div>
+
+        <div class="card">
+          <label class="field">
+            <span>Price</span>
+            <div class="input-group">
+              <input type="number" min="0" step="0.01" id="breakdown-price" value="795" />
+              <span class="unit">₹</span>
+            </div>
+          </label>
+
+          <label class="field">
+            <span>Weight</span>
+            <div class="input-group">
+              <input type="number" min="0" step="0.001" id="breakdown-weight" value="1.240" />
+              <span class="unit">Kg</span>
+            </div>
+          </label>
+        </div>
+
+        <div class="result">
+          <span class="result-label">Price / Kg</span>
+          <div class="input-group output">
+            <input type="text" id="breakdown-result" readonly />
+            <span class="unit">₹</span>
+          </div>
+        </div>
+
+        <button class="reset" data-reset="breakdown">Reset</button>
+      </section>
+
+      <section class="screen" data-screen="fertilizer">
+        <div class="screen-header">
+          <button class="back" data-back aria-label="Back">←</button>
+          <h2>Fertilizer Price Calculator</h2>
+        </div>
+
+        <div class="product-list" id="product-list">
+          <!-- Products inserted by JS -->
+        </div>
+
+        <button class="ghost" id="add-product">Add Product</button>
+
+        <div class="result">
+          <span class="result-label">Total Price</span>
+          <div class="input-group output">
+            <input type="text" id="fertilizer-total" readonly />
+            <span class="unit">₹</span>
+          </div>
+        </div>
+
+        <button class="reset" data-reset="fertilizer">Reset</button>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
