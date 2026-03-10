@@ -46,10 +46,6 @@ body {
   flex-direction: column;
 }
 
-.keyboard-visible .app {
-  padding-bottom: calc(var(--keyboard-height) + var(--footer-height) + env(safe-area-inset-bottom, 0px));
-}
-
 main {
   flex: 1;
   min-height: 0;
@@ -242,43 +238,49 @@ h1 {
   display: grid;
   gap: 18px;
   flex: 0 0 auto;
+  padding-bottom: calc(var(--footer-height) + 12px);
 }
 
 .screen-footer {
   margin-top: auto;
   display: grid;
   gap: 12px;
-  padding-top: 20px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: 12px 22px calc(12px + env(safe-area-inset-bottom, 0px));
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: min(400px, 100%);
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--bg);
+  z-index: 45;
+  transition: bottom 0.2s ease;
 }
 
 .keyboard-visible .screen-footer {
-  position: fixed;
-  left: 50%;
   bottom: var(--keyboard-height);
-  transform: translateX(-50%);
-  width: min(400px, 100%);
-  padding: 12px 22px calc(12px + env(safe-area-inset-bottom, 0px));
-  margin-top: 0;
-  background: var(--bg);
+}
+
+.keyboard-visible .screen-body {
+  padding-bottom: calc(var(--footer-height) + var(--keyboard-height) + 12px);
 }
 
 .keyboard {
   position: fixed;
-  left: 50%;
+  left: 0;
   bottom: 0;
   width: min(400px, 100%);
   height: var(--keyboard-height);
   padding: 12px 14px 14px;
   background: #070709;
   box-shadow: none;
-  transform: translateX(-50%) translateY(100%);
+  transform: translateY(100%);
   transition: transform 0.25s ease;
   z-index: 50;
 }
 
 .keyboard-visible .keyboard {
-  transform: translateX(-50%) translateY(0);
+  transform: translateY(0);
 }
 
 .keyboard-grid {
