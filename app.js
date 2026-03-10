@@ -77,11 +77,11 @@ const updateCaret = (input) => {
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
   const visibleWidth = input.clientWidth || 0;
-  const scrollLeft = Math.max(0, textWidth - (visibleWidth - 8));
+  const scrollLeft = Math.max(0, textWidth - (visibleWidth - 6));
   input.scrollLeft = scrollLeft;
-  const caretX = Math.min(paddingLeft + (textWidth - scrollLeft) + 2, maxX);
+  const caretX = Math.min(paddingLeft + (textWidth - scrollLeft), maxX);
 
-  group.style.setProperty("--caret-x", `${caretX}px`);
+  group.style.setProperty("--caret-x", `${Math.round(caretX)}px`);
 };
 
 const setActiveInput = (input) => {
@@ -250,22 +250,26 @@ const placeCaretFromEvent = (input, event) => {
   ctx.font = font;
 
   const value = input.value || "";
-  let index = 0;
-  let width = 0;
+  if (value.length === 0) {
+    setCaretIndex(input, 0);
+    updateCaret(input);
+    return;
+  }
+
+  const widths = [];
   for (let i = 0; i < value.length; i += 1) {
-    const nextWidth = ctx.measureText(value.slice(0, i + 1)).width;
-    if (nextWidth >= relativeX) {
-      index = i + 1;
-      width = nextWidth;
+    widths[i] = ctx.measureText(value.slice(0, i + 1)).width;
+  }
+
+  let index = 0;
+  for (let i = 0; i < widths.length; i += 1) {
+    const prev = i === 0 ? 0 : widths[i - 1];
+    const mid = prev + (widths[i] - prev) / 2;
+    if (relativeX <= mid) {
+      index = i;
       break;
     }
     index = i + 1;
-    width = nextWidth;
-  }
-
-  if (value.length === 0) {
-    index = 0;
-    width = 0;
   }
 
   setCaretIndex(input, index);

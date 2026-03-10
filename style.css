@@ -204,13 +204,27 @@ h1 {
 .input-group {
   display: flex;
   align-items: center;
-  background: #3a3b3f;
+  --input-bg: #3a3b3f;
+  background: var(--input-bg);
   border: 1px solid #4b4d52;
   border-radius: 6px;
   height: 52px;
   padding: 0 12px;
   position: relative;
   width: 100%;
+}
+
+.input-group::before {
+  content: "";
+  position: absolute;
+  top: 1px;
+  bottom: 1px;
+  right: 1px;
+  width: 56px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0), var(--input-bg));
+  border-radius: 5px;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .input-group.is-active {
@@ -228,6 +242,7 @@ h1 {
   background: #f2f2f2;
   transform: translateY(-50%);
   animation: caretBlink 1s steps(2, start) infinite;
+  z-index: 3;
 }
 
 .input-group input {
@@ -240,6 +255,8 @@ h1 {
   font-size: 1rem;
   outline: none;
   height: 100%;
+  position: relative;
+  z-index: 1;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
@@ -254,6 +271,8 @@ h1 {
 .input-group .unit {
   color: var(--muted);
   font-weight: 500;
+  position: relative;
+  z-index: 2;
 }
 
 .result {
@@ -378,7 +397,8 @@ h1 {
 }
 
 .output {
-  background: #23341f;
+  --input-bg: #23341f;
+  background: var(--input-bg);
   border-color: #3d5d36;
 }
 
