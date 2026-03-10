@@ -397,6 +397,8 @@ const resetButtons = document.querySelectorAll("[data-reset]");
 resetButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const target = button.dataset.reset;
+    const screen = button.closest(".screen");
+    const firstInput = screen ? screen.querySelector("input[data-number]") : null;
     if (target === "discount") {
       discountPrice.value = defaultDiscount.price;
       discountRate.value = defaultDiscount.rate;
@@ -409,6 +411,9 @@ resetButtons.forEach((button) => {
     }
     if (target === "fertilizer") {
       renderProducts(defaultProducts);
+    }
+    if (firstInput) {
+      setActiveInput(firstInput);
     }
   });
 });
