@@ -39,6 +39,29 @@ const syncInput = (input) => {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 };
 
+const updateCaret = (input) => {
+  const group = input.closest(".input-group");
+  if (!group) return;
+
+  const unit = group.querySelector(".unit");
+  const style = window.getComputedStyle(input);
+  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+
+  const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.font = font;
+
+  const value = input.value || "";
+  const textWidth = ctx.measureText(value).width;
+  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+  const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
+  const caretX = Math.min(paddingLeft + textWidth + 2, maxX);
+
+  group.style.setProperty("--caret-x", `${caretX}px`);
+};
+
 const setActiveInput = (input) => {
   if (activeGroup) {
     activeGroup.classList.remove("is-active");
@@ -54,6 +77,7 @@ const setActiveInput = (input) => {
     input.value = "";
     syncInput(input);
   }
+  updateCaret(input);
 };
 
 const showScreen = (name) => {
@@ -234,6 +258,7 @@ const handleKey = (key) => {
 
   activeInput.value = value;
   syncInput(activeInput);
+  updateCaret(activeInput);
 };
 
 keyboard.addEventListener("pointerdown", (event) => {
