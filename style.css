@@ -228,6 +228,10 @@ h1 {
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
+.keyboard-open .screen-footer {
+  transform: translateY(calc(-1 * var(--kb, 0px)));
+}
+
 .footer-row {
   display: flex;
   gap: 12px;

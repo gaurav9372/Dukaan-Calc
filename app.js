@@ -176,14 +176,24 @@ calcBreakdown();
 renderProducts(defaultProducts);
 
 const setViewportHeight = () => {
-  if (!window.visualViewport) return;
-  const height = Math.round(window.visualViewport.height);
+  const vv = window.visualViewport;
+  const height = Math.round(vv ? vv.height : window.innerHeight);
   document.documentElement.style.setProperty("--vvh", `${height}px`);
+
+  if (vv) {
+    const keyboard = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty("--kb", `${Math.round(keyboard)}px`);
+    document.body.classList.toggle("keyboard-open", keyboard > 0);
+  } else {
+    document.documentElement.style.setProperty("--kb", "0px");
+    document.body.classList.remove("keyboard-open");
+  }
 };
 
+setViewportHeight();
 if (window.visualViewport) {
-  setViewportHeight();
   window.visualViewport.addEventListener("resize", setViewportHeight);
   window.visualViewport.addEventListener("scroll", setViewportHeight);
-  window.addEventListener("orientationchange", setViewportHeight);
 }
+window.addEventListener("resize", setViewportHeight);
+window.addEventListener("orientationchange", setViewportHeight);
