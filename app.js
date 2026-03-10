@@ -105,7 +105,7 @@ const showScreen = (name) => {
 
   const active = document.querySelector(`.screen[data-screen="${name}"]`);
   if (active) {
-    const firstInput = active.querySelector('input[type="number"]');
+    const firstInput = active.querySelector("input[data-number]");
     if (firstInput) {
       setTimeout(() => {
         setActiveInput(firstInput);
@@ -151,14 +151,14 @@ const renderProducts = (products) => {
         <label class="field">
           <span>Price</span>
           <div class="input-group">
-            <input type="number" min="0" step="0.01" value="${product.price}" data-field="price" readonly inputmode="none" />
+            <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" />
             <span class="unit">₹</span>
           </div>
         </label>
         <label class="field">
           <span>Weight</span>
           <div class="input-group">
-            <input type="number" min="0" step="0.01" value="${product.weight}" data-field="weight" readonly inputmode="none" />
+            <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" />
             <span class="unit">Kg</span>
           </div>
         </label>
@@ -264,7 +264,7 @@ const placeCaretFromEvent = (input, event) => {
 };
 
 const setupNumberInputs = () => {
-  document.querySelectorAll('input[type="number"]').forEach((input) => {
+  document.querySelectorAll("input[data-number]").forEach((input) => {
     if (input.dataset.keyboardReady) return;
     input.dataset.keyboardReady = "true";
     input.setAttribute("readonly", "readonly");
@@ -303,7 +303,7 @@ const handleKey = (key) => {
   } else if (key === "enter") {
     const activeScreen = activeInput.closest(".screen");
     const inputs = activeScreen
-      ? Array.from(activeScreen.querySelectorAll('input[type="number"]'))
+      ? Array.from(activeScreen.querySelectorAll("input[data-number]"))
       : [];
     const currentIndex = inputs.indexOf(activeInput);
     const nextInput = inputs[currentIndex + 1];
@@ -386,7 +386,7 @@ keyboard.addEventListener("contextmenu", (event) => {
 document.addEventListener("pointerdown", (event) => {
   const group = event.target.closest(".input-group");
   if (!group) return;
-  const input = group.querySelector('input[type="number"]');
+  const input = group.querySelector("input[data-number]");
   if (!input) return;
   setActiveInput(input);
   placeCaretFromEvent(input, event);

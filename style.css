@@ -15,6 +15,7 @@
   --radius: 18px;
   --font: "Space Grotesk", system-ui, sans-serif;
   --keyboard-height: clamp(210px, 32vh, 280px);
+  --footer-height: 110px;
 }
 
 * {
@@ -46,7 +47,7 @@ body {
 }
 
 .keyboard-visible .app {
-  padding-bottom: calc(var(--keyboard-height) + 12px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(var(--keyboard-height) + var(--footer-height) + env(safe-area-inset-bottom, 0px));
 }
 
 main {
@@ -249,6 +250,17 @@ h1 {
   gap: 12px;
   padding-top: 20px;
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+.keyboard-visible .screen-footer {
+  position: fixed;
+  left: 50%;
+  bottom: var(--keyboard-height);
+  transform: translateX(-50%);
+  width: min(400px, 100%);
+  padding: 12px 22px calc(12px + env(safe-area-inset-bottom, 0px));
+  margin-top: 0;
+  background: var(--bg);
 }
 
 .keyboard {
