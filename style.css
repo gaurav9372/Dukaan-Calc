@@ -211,6 +211,7 @@ h1 {
 .result {
   display: grid;
   gap: 10px;
+  flex: 1;
 }
 
 .screen-body {
@@ -227,6 +228,12 @@ h1 {
   padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
+.footer-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
 .result-label {
   color: #69c86b;
   font-size: 0.95rem;
@@ -238,7 +245,8 @@ h1 {
 }
 
 .reset {
-  width: 100%;
+  width: auto;
+  min-width: 110px;
   margin-top: 18px;
   height: 52px;
   padding: 0 14px;
