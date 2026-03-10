@@ -21,6 +21,9 @@ const keyboard = document.getElementById("keyboard");
 
 let activeInput = null;
 let activeGroup = null;
+let repeatTimeout = null;
+let repeatInterval = null;
+let repeatKey = null;
 
 const showKeyboard = () => {
   document.body.classList.add("keyboard-visible");
@@ -339,13 +342,45 @@ const handleKey = (key) => {
 };
 
 keyboard.addEventListener("pointerdown", (event) => {
-  event.preventDefault();
-});
-
-keyboard.addEventListener("click", (event) => {
   const button = event.target.closest("[data-key]");
   if (!button) return;
-  handleKey(button.dataset.key);
+  event.preventDefault();
+  const key = button.dataset.key;
+  repeatKey = key;
+  handleKey(key);
+
+  clearTimeout(repeatTimeout);
+  clearInterval(repeatInterval);
+  repeatTimeout = setTimeout(() => {
+    repeatInterval = setInterval(() => {
+      if (repeatKey === "backspace") {
+        if (!activeInput) return;
+        activeInput.value = "";
+        setCaretIndex(activeInput, 0);
+        syncInput(activeInput);
+        updateCaret(activeInput);
+      } else {
+        handleKey(repeatKey);
+      }
+    }, 70);
+  }, 350);
+});
+
+const stopRepeat = () => {
+  clearTimeout(repeatTimeout);
+  clearInterval(repeatInterval);
+  repeatTimeout = null;
+  repeatInterval = null;
+  repeatKey = null;
+};
+
+keyboard.addEventListener("pointerup", stopRepeat);
+keyboard.addEventListener("pointerleave", stopRepeat);
+keyboard.addEventListener("pointercancel", stopRepeat);
+window.addEventListener("pointerup", stopRepeat);
+
+keyboard.addEventListener("contextmenu", (event) => {
+  event.preventDefault();
 });
 
 document.addEventListener("pointerdown", (event) => {
