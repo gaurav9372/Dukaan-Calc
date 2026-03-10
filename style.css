@@ -391,10 +391,16 @@ h1 {
   width: 100%;
 }
 
+.product-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .product-title {
   font-weight: 600;
-  font-size: 0.95rem;
-  color: #d7d9df;
+  font-size: 1rem;
+  color: #f0f2f6;
 }
 
 .product-row {
@@ -405,8 +411,9 @@ h1 {
 
 .product-total {
   text-align: right;
-  color: #d2d6dc;
-  font-weight: 600;
+  color: #7bd17b;
+  font-weight: 700;
+  font-size: 1.1rem;
 }
 
 .ghost {

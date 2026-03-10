@@ -152,24 +152,20 @@ const renderProducts = (products) => {
     card.dataset.index = index;
 
     card.innerHTML = `
-      <div class="product-title">Product ${index + 1}</div>
-      <div class="product-row">
-        <label class="field">
-          <span>Price</span>
-          <div class="input-group">
-            <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" />
-            <span class="unit">₹</span>
-          </div>
-        </label>
-        <label class="field">
-          <span>Weight</span>
-          <div class="input-group">
-            <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" />
-            <span class="unit">Kg</span>
-          </div>
-        </label>
+      <div class="product-head">
+        <div class="product-title">Product ${index + 1}</div>
+        <div class="product-total" data-total>₹${formatNumber(product.price * product.weight)}</div>
       </div>
-      <div class="product-total" data-total>₹${formatNumber(product.price * product.weight)}</div>
+      <div class="product-row">
+        <div class="input-group">
+          <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" />
+          <span class="unit">₹</span>
+        </div>
+        <div class="input-group">
+          <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" />
+          <span class="unit">Kg</span>
+        </div>
+      </div>
     `;
 
     productList.appendChild(card);
