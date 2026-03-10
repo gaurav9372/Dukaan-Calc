@@ -174,3 +174,16 @@ resetButtons.forEach((button) => {
 calcDiscount();
 calcBreakdown();
 renderProducts(defaultProducts);
+
+const setViewportHeight = () => {
+  if (!window.visualViewport) return;
+  const height = Math.round(window.visualViewport.height);
+  document.documentElement.style.setProperty("--vvh", `${height}px`);
+};
+
+if (window.visualViewport) {
+  setViewportHeight();
+  window.visualViewport.addEventListener("resize", setViewportHeight);
+  window.visualViewport.addEventListener("scroll", setViewportHeight);
+  window.addEventListener("orientationchange", setViewportHeight);
+}
