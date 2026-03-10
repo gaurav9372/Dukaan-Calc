@@ -39,6 +39,18 @@ const syncInput = (input) => {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 };
 
+const getCaretIndex = (input) => {
+  const stored = Number(input.dataset.caretIndex);
+  if (Number.isInteger(stored)) return stored;
+  return input.value.length;
+};
+
+const setCaretIndex = (input, index) => {
+  const clamped = Math.max(0, Math.min(index, input.value.length));
+  input.dataset.caretIndex = String(clamped);
+  return clamped;
+};
+
 const updateCaret = (input) => {
   const group = input.closest(".input-group");
   if (!group) return;
@@ -53,7 +65,9 @@ const updateCaret = (input) => {
   ctx.font = font;
 
   const value = input.value || "";
-  const textWidth = ctx.measureText(value).width;
+  const caretIndex = setCaretIndex(input, getCaretIndex(input));
+  const textBefore = value.slice(0, caretIndex);
+  const textWidth = ctx.measureText(textBefore).width;
   const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
@@ -77,6 +91,7 @@ const setActiveInput = (input) => {
     input.value = "";
     syncInput(input);
   }
+  setCaretIndex(input, input.value.length);
   updateCaret(input);
 };
 
@@ -203,6 +218,48 @@ addProductButton.addEventListener("click", () => {
   ]);
 });
 
+const placeCaretFromEvent = (input, event) => {
+  const group = input.closest(".input-group");
+  if (!group) return;
+
+  const rect = group.getBoundingClientRect();
+  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  const unit = group.querySelector(".unit");
+  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+  const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
+  const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
+
+  const style = window.getComputedStyle(input);
+  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.font = font;
+
+  const value = input.value || "";
+  let index = 0;
+  let width = 0;
+  for (let i = 0; i < value.length; i += 1) {
+    const nextWidth = ctx.measureText(value.slice(0, i + 1)).width;
+    if (paddingLeft + nextWidth >= clickX) {
+      index = i + 1;
+      width = nextWidth;
+      break;
+    }
+    index = i + 1;
+    width = nextWidth;
+  }
+
+  if (value.length === 0) {
+    index = 0;
+    width = 0;
+  }
+
+  setCaretIndex(input, index);
+  const caretX = Math.min(paddingLeft + width + 2, maxX);
+  group.style.setProperty("--caret-x", `${caretX}px`);
+};
+
 const setupNumberInputs = () => {
   document.querySelectorAll('input[type="number"]').forEach((input) => {
     if (input.dataset.keyboardReady) return;
@@ -210,7 +267,10 @@ const setupNumberInputs = () => {
     input.setAttribute("readonly", "readonly");
     input.setAttribute("inputmode", "none");
     input.addEventListener("focus", () => setActiveInput(input));
-    input.addEventListener("click", () => setActiveInput(input));
+    input.addEventListener("click", (event) => {
+      setActiveInput(input);
+      placeCaretFromEvent(input, event);
+    });
     input.addEventListener("blur", () => {
       const group = input.closest(".input-group");
       if (group) {
@@ -230,9 +290,13 @@ const setupNumberInputs = () => {
 const handleKey = (key) => {
   if (!activeInput) return;
   let value = activeInput.value;
+  let caretIndex = getCaretIndex(activeInput);
 
   if (key === "backspace") {
-    value = value.slice(0, -1);
+    if (caretIndex > 0) {
+      value = value.slice(0, caretIndex - 1) + value.slice(caretIndex);
+      caretIndex -= 1;
+    }
   } else if (key === "enter") {
     const activeScreen = activeInput.closest(".screen");
     const inputs = activeScreen
@@ -250,13 +314,26 @@ const handleKey = (key) => {
     return;
   } else if (key === ".") {
     if (!value.includes(".")) {
-      value = value === "" ? "0." : `${value}.`;
+      if (value === "") {
+        value = "0.";
+        caretIndex = value.length;
+      } else {
+        value = value.slice(0, caretIndex) + "." + value.slice(caretIndex);
+        caretIndex += 1;
+      }
     }
   } else {
-    value = value === "0" ? key : `${value}${key}`;
+    if (value === "0") {
+      value = key;
+      caretIndex = value.length;
+    } else {
+      value = value.slice(0, caretIndex) + key + value.slice(caretIndex);
+      caretIndex += 1;
+    }
   }
 
   activeInput.value = value;
+  setCaretIndex(activeInput, caretIndex);
   syncInput(activeInput);
   updateCaret(activeInput);
 };
@@ -269,6 +346,15 @@ keyboard.addEventListener("click", (event) => {
   const button = event.target.closest("[data-key]");
   if (!button) return;
   handleKey(button.dataset.key);
+});
+
+document.addEventListener("pointerdown", (event) => {
+  const group = event.target.closest(".input-group");
+  if (!group) return;
+  const input = group.querySelector('input[type="number"]');
+  if (!input) return;
+  setActiveInput(input);
+  placeCaretFromEvent(input, event);
 });
 
 const resetButtons = document.querySelectorAll("[data-reset]");
