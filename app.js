@@ -191,8 +191,19 @@ const handleKey = (key) => {
   if (key === "backspace") {
     value = value.slice(0, -1);
   } else if (key === "enter") {
-    activeInput.blur();
-    hideKeyboard();
+    const activeScreen = activeInput.closest(".screen");
+    const inputs = activeScreen
+      ? Array.from(activeScreen.querySelectorAll('input[type="number"]'))
+      : [];
+    const currentIndex = inputs.indexOf(activeInput);
+    const nextInput = inputs[currentIndex + 1];
+
+    if (nextInput) {
+      setActiveInput(nextInput);
+    } else {
+      activeInput.blur();
+      hideKeyboard();
+    }
     return;
   } else if (key === ".") {
     if (!value.includes(".")) {
