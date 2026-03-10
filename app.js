@@ -9,6 +9,7 @@ const defaultProducts = [{ price: 0, weight: 0 }];
 const discountPrice = document.getElementById("discount-price");
 const discountRate = document.getElementById("discount-rate");
 const discountResult = document.getElementById("discount-result");
+const discountAmount = document.getElementById("discount-amount");
 
 const breakdownPrice = document.getElementById("breakdown-price");
 const breakdownWeight = document.getElementById("breakdown-weight");
@@ -128,8 +129,12 @@ const formatNumber = (value) => {
 const calcDiscount = () => {
   const price = Number(discountPrice.value) || 0;
   const rate = Number(discountRate.value) || 0;
-  const newPrice = price - (price * rate) / 100;
+  const amount = (price * rate) / 100;
+  const newPrice = price - amount;
   discountResult.value = formatNumber(newPrice);
+  if (discountAmount) {
+    discountAmount.textContent = `Discount Amount: ₹${formatNumber(amount)}`;
+  }
 };
 
 const calcBreakdown = () => {
