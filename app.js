@@ -114,6 +114,7 @@ const showScreen = (name) => {
   }
 
   if (name === "home") {
+    resetAll();
     hideKeyboard();
   }
 };
@@ -411,6 +412,18 @@ resetButtons.forEach((button) => {
     }
   });
 });
+
+const resetAll = () => {
+  discountPrice.value = defaultDiscount.price;
+  discountRate.value = defaultDiscount.rate;
+  calcDiscount();
+
+  breakdownPrice.value = defaultBreakdown.price;
+  breakdownWeight.value = defaultBreakdown.weight;
+  calcBreakdown();
+
+  renderProducts(defaultProducts);
+};
 
 calcDiscount();
 calcBreakdown();

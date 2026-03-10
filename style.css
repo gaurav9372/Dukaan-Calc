@@ -14,7 +14,7 @@
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
   --radius: 18px;
   --font: "Space Grotesk", system-ui, sans-serif;
-  --keyboard-height: clamp(210px, 32vh, 280px);
+  --keyboard-height: clamp(180px, 28vh, 240px);
   --footer-height: 110px;
 }
 
@@ -248,10 +248,11 @@ h1 {
   padding: 12px 22px calc(12px + env(safe-area-inset-bottom, 0px));
   position: fixed;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: min(400px, 100%);
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   background: var(--bg);
   z-index: 45;
   transition: bottom 0.2s ease;
@@ -268,8 +269,11 @@ h1 {
 .keyboard {
   position: fixed;
   left: 0;
+  right: 0;
   bottom: 0;
-  width: min(400px, 100%);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
   height: var(--keyboard-height);
   padding: 12px 14px 14px;
   background: #070709;
