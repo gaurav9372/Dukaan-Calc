@@ -22,6 +22,19 @@ const showScreen = (name) => {
   screens.forEach((screen) => {
     screen.classList.toggle("active", screen.dataset.screen === name);
   });
+
+  const active = document.querySelector(`.screen[data-screen="${name}"]`);
+  if (active) {
+    const firstInput = active.querySelector('input[type="number"]');
+    if (firstInput) {
+      setTimeout(() => {
+        firstInput.focus();
+        if (firstInput.value === "0") {
+          firstInput.value = "";
+        }
+      }, 0);
+    }
+  }
 };
 
 const formatNumber = (value) => {
@@ -107,6 +120,18 @@ backButtons.forEach((button) => {
 [breakdownPrice, breakdownWeight].forEach((input) => {
   input.addEventListener("input", calcBreakdown);
 });
+
+document.addEventListener(
+  "focusin",
+  (event) => {
+    if (event.target.matches('input[type="number"]')) {
+      if (event.target.value === "0") {
+        event.target.value = "";
+      }
+    }
+  },
+  true
+);
 
 productList.addEventListener("input", (event) => {
   if (event.target.matches("input")) {
