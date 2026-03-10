@@ -37,6 +37,7 @@ const hideKeyboard = () => {
     activeGroup.classList.remove("is-active");
     activeGroup = null;
   }
+  stopRepeat();
 };
 
 const syncInput = (input) => {
@@ -75,7 +76,10 @@ const updateCaret = (input) => {
   const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
-  const caretX = Math.min(paddingLeft + textWidth + 2, maxX);
+  const visibleWidth = input.clientWidth || 0;
+  const scrollLeft = Math.max(0, textWidth - (visibleWidth - 8));
+  input.scrollLeft = scrollLeft;
+  const caretX = Math.min(paddingLeft + (textWidth - scrollLeft) + 2, maxX);
 
   group.style.setProperty("--caret-x", `${caretX}px`);
 };
@@ -100,6 +104,7 @@ const setActiveInput = (input) => {
 };
 
 const showScreen = (name) => {
+  stopRepeat();
   screens.forEach((screen) => {
     screen.classList.toggle("active", screen.dataset.screen === name);
   });
@@ -118,6 +123,7 @@ const showScreen = (name) => {
     resetAll();
     hideKeyboard();
   }
+  updateFooterHeight();
 };
 
 const formatNumber = (value) => {
@@ -173,6 +179,7 @@ const renderProducts = (products) => {
 
   setupNumberInputs();
   updateFertilizerTotal();
+  ensureActiveInput();
 };
 
 const updateFertilizerTotal = () => {
@@ -233,6 +240,7 @@ const placeCaretFromEvent = (input, event) => {
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
   const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
+  const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
   const style = window.getComputedStyle(input);
   const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
@@ -246,7 +254,7 @@ const placeCaretFromEvent = (input, event) => {
   let width = 0;
   for (let i = 0; i < value.length; i += 1) {
     const nextWidth = ctx.measureText(value.slice(0, i + 1)).width;
-    if (paddingLeft + nextWidth >= clickX) {
+    if (nextWidth >= relativeX) {
       index = i + 1;
       width = nextWidth;
       break;
@@ -261,8 +269,7 @@ const placeCaretFromEvent = (input, event) => {
   }
 
   setCaretIndex(input, index);
-  const caretX = Math.min(paddingLeft + width + 2, maxX);
-  group.style.setProperty("--caret-x", `${caretX}px`);
+  updateCaret(input);
 };
 
 const setupNumberInputs = () => {
@@ -290,6 +297,24 @@ const setupNumberInputs = () => {
       }
     });
   });
+};
+
+const ensureActiveInput = () => {
+  if (activeInput && document.body.contains(activeInput)) return;
+  activeInput = null;
+  if (activeGroup) {
+    activeGroup.classList.remove("is-active");
+    activeGroup = null;
+  }
+  if (document.body.classList.contains("keyboard-visible")) {
+    const activeScreen = document.querySelector(".screen.active");
+    const nextInput = activeScreen ? activeScreen.querySelector("input[data-number]") : null;
+    if (nextInput) {
+      setActiveInput(nextInput);
+    } else {
+      hideKeyboard();
+    }
+  }
 };
 
 const handleKey = (key) => {

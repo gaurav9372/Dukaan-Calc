@@ -67,6 +67,12 @@ main {
   display: block;
 }
 
+.screen[data-screen="home"] {
+  height: 100%;
+  overflow: auto;
+  padding-bottom: 16px;
+}
+
 .screen.calc {
   display: none;
   flex-direction: column;
@@ -234,6 +240,15 @@ h1 {
   font-size: 1rem;
   outline: none;
   height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.input-group input::-webkit-scrollbar {
+  display: none;
 }
 
 .input-group .unit {
