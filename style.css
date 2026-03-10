@@ -38,7 +38,7 @@ body {
   height: 100dvh;
   background: transparent;
   border-radius: 0;
-  padding: 24px 22px calc(28px + env(safe-area-inset-bottom, 0px));
+  padding: 24px 22px 0;
   box-shadow: none;
   display: flex;
   flex-direction: column;
@@ -47,11 +47,14 @@ body {
 main {
   flex: 1;
   min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .screen {
   display: none;
   animation: fadeIn 0.35s ease;
+  flex: 1;
 }
 
 .screen.active {
@@ -223,7 +226,7 @@ h1 {
   display: grid;
   gap: 12px;
   padding-top: 20px;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
 }
 
 .result-label {
