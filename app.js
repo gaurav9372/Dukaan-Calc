@@ -20,6 +20,7 @@ const fertilizerTotal = document.getElementById("fertilizer-total");
 const keyboard = document.getElementById("keyboard");
 
 let activeInput = null;
+let activeGroup = null;
 
 const showKeyboard = () => {
   document.body.classList.add("keyboard-visible");
@@ -28,6 +29,10 @@ const showKeyboard = () => {
 const hideKeyboard = () => {
   document.body.classList.remove("keyboard-visible");
   activeInput = null;
+  if (activeGroup) {
+    activeGroup.classList.remove("is-active");
+    activeGroup = null;
+  }
 };
 
 const syncInput = (input) => {
@@ -35,9 +40,16 @@ const syncInput = (input) => {
 };
 
 const setActiveInput = (input) => {
+  if (activeGroup) {
+    activeGroup.classList.remove("is-active");
+  }
   activeInput = input;
   showKeyboard();
   input.focus();
+  activeGroup = input.closest(".input-group");
+  if (activeGroup) {
+    activeGroup.classList.add("is-active");
+  }
   if (input.value === "0") {
     input.value = "";
     syncInput(input);
@@ -176,6 +188,13 @@ const setupNumberInputs = () => {
     input.addEventListener("focus", () => setActiveInput(input));
     input.addEventListener("click", () => setActiveInput(input));
     input.addEventListener("blur", () => {
+      const group = input.closest(".input-group");
+      if (group) {
+        group.classList.remove("is-active");
+        if (activeGroup === group) {
+          activeGroup = null;
+        }
+      }
       if (input.value === "") {
         input.value = "0";
         syncInput(input);
