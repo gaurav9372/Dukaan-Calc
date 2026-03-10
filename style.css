@@ -38,7 +38,7 @@ body {
   min-height: 100vh;
   background: transparent;
   border-radius: 0;
-  padding: 24px 22px 28px;
+  padding: 24px 22px calc(28px + env(safe-area-inset-bottom, 0px));
   box-shadow: none;
 }
 
@@ -216,6 +216,7 @@ h1 {
   display: grid;
   gap: 12px;
   padding-top: 20px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 }
 
 .result-label {
