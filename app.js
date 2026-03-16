@@ -498,3 +498,8 @@ window.addEventListener("resize", setViewportHeight);
 window.addEventListener("orientationchange", setViewportHeight);
 window.addEventListener("resize", updateFooterHeight);
 window.addEventListener("orientationchange", updateFooterHeight);
+
+// For testing
+if (typeof window !== "undefined") {
+  window.formatNumber = formatNumber;
+}
