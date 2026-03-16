@@ -321,49 +321,63 @@ const ensureActiveInput = () => {
   }
 };
 
+const handleBackspace = (value, caretIndex) => {
+  if (caretIndex > 0) {
+    const newValue = value.slice(0, caretIndex - 1) + value.slice(caretIndex);
+    return { value: newValue, caretIndex: caretIndex - 1 };
+  }
+  return { value, caretIndex };
+};
+
+const handleEnter = () => {
+  if (!activeInput) return;
+  const activeScreen = activeInput.closest(".screen");
+  const inputs = activeScreen
+    ? Array.from(activeScreen.querySelectorAll("input[data-number]"))
+    : [];
+  const currentIndex = inputs.indexOf(activeInput);
+  const nextInput = inputs[currentIndex + 1];
+
+  if (nextInput) {
+    setActiveInput(nextInput);
+  } else {
+    activeInput.blur();
+    hideKeyboard();
+  }
+};
+
+const handleCharacter = (key, value, caretIndex) => {
+  if (key === ".") {
+    if (!value.includes(".")) {
+      if (value === "") {
+        return { value: "0.", caretIndex: 2 };
+      }
+      const newValue = value.slice(0, caretIndex) + "." + value.slice(caretIndex);
+      return { value: newValue, caretIndex: caretIndex + 1 };
+    }
+    return { value, caretIndex };
+  }
+
+  if (value === "0") {
+    return { value: key, caretIndex: key.length };
+  }
+
+  const newValue = value.slice(0, caretIndex) + key + value.slice(caretIndex);
+  return { value: newValue, caretIndex: caretIndex + 1 };
+};
+
 const handleKey = (key) => {
   if (!activeInput) return;
   let value = activeInput.value;
   let caretIndex = getCaretIndex(activeInput);
 
   if (key === "backspace") {
-    if (caretIndex > 0) {
-      value = value.slice(0, caretIndex - 1) + value.slice(caretIndex);
-      caretIndex -= 1;
-    }
+    ({ value, caretIndex } = handleBackspace(value, caretIndex));
   } else if (key === "enter") {
-    const activeScreen = activeInput.closest(".screen");
-    const inputs = activeScreen
-      ? Array.from(activeScreen.querySelectorAll("input[data-number]"))
-      : [];
-    const currentIndex = inputs.indexOf(activeInput);
-    const nextInput = inputs[currentIndex + 1];
-
-    if (nextInput) {
-      setActiveInput(nextInput);
-    } else {
-      activeInput.blur();
-      hideKeyboard();
-    }
+    handleEnter();
     return;
-  } else if (key === ".") {
-    if (!value.includes(".")) {
-      if (value === "") {
-        value = "0.";
-        caretIndex = value.length;
-      } else {
-        value = value.slice(0, caretIndex) + "." + value.slice(caretIndex);
-        caretIndex += 1;
-      }
-    }
   } else {
-    if (value === "0") {
-      value = key;
-      caretIndex = value.length;
-    } else {
-      value = value.slice(0, caretIndex) + key + value.slice(caretIndex);
-      caretIndex += 1;
-    }
+    ({ value, caretIndex } = handleCharacter(key, value, caretIndex));
   }
 
   activeInput.value = value;
