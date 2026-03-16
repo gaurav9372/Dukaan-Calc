@@ -157,22 +157,50 @@ const renderProducts = (products) => {
     card.className = "product-card";
     card.dataset.index = index;
 
-    card.innerHTML = `
-      <div class="product-head">
-        <div class="product-title">Product ${index + 1}</div>
-        <div class="product-total" data-total>₹${formatNumber(product.price * product.weight)}</div>
-      </div>
-      <div class="product-row">
-        <div class="input-group">
-          <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" />
-          <span class="unit">₹</span>
-        </div>
-        <div class="input-group">
-          <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" />
-          <span class="unit">Kg</span>
-        </div>
-      </div>
-    `;
+    const head = document.createElement("div");
+    head.className = "product-head";
+
+    const title = document.createElement("div");
+    title.className = "product-title";
+    title.textContent = `Product ${index + 1}`;
+
+    const total = document.createElement("div");
+    total.className = "product-total";
+    total.setAttribute("data-total", "");
+    total.textContent = `₹${formatNumber(product.price * product.weight)}`;
+
+    head.appendChild(title);
+    head.appendChild(total);
+
+    const row = document.createElement("div");
+    row.className = "product-row";
+
+    const createInputGroup = (value, field, unitText) => {
+      const group = document.createElement("div");
+      group.className = "input-group";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = value;
+      input.setAttribute("data-field", field);
+      input.setAttribute("data-number", "");
+      input.readOnly = true;
+      input.setAttribute("inputmode", "none");
+
+      const unit = document.createElement("span");
+      unit.className = "unit";
+      unit.textContent = unitText;
+
+      group.appendChild(input);
+      group.appendChild(unit);
+      return group;
+    };
+
+    row.appendChild(createInputGroup(product.price, "price", "₹"));
+    row.appendChild(createInputGroup(product.weight, "weight", "Kg"));
+
+    card.appendChild(head);
+    card.appendChild(row);
 
     productList.appendChild(card);
   });
