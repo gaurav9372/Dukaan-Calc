@@ -174,6 +174,10 @@ const renderProducts = (products) => {
       </div>
     `;
 
+    card._priceInput = card.querySelector("[data-field='price']");
+    card._weightInput = card.querySelector("[data-field='weight']");
+    card._totalEl = card.querySelector("[data-total]");
+
     productList.appendChild(card);
   });
 
@@ -183,16 +187,18 @@ const renderProducts = (products) => {
 };
 
 const updateFertilizerTotal = () => {
-  const cards = productList.querySelectorAll(".product-card");
+  const cards = productList.children;
   let total = 0;
-  cards.forEach((card) => {
-    const price = Number(card.querySelector("[data-field='price']").value) || 0;
-    const weight = Number(card.querySelector("[data-field='weight']").value) || 0;
+  for (let i = 0; i < cards.length; i++) {
+    const card = cards[i];
+    if (!card.classList.contains("product-card")) continue;
+
+    const price = Number(card._priceInput.value) || 0;
+    const weight = Number(card._weightInput.value) || 0;
     const subtotal = price * weight;
     total += subtotal;
-    const totalEl = card.querySelector("[data-total]");
-    totalEl.textContent = `₹${formatNumber(subtotal)}`;
-  });
+    card._totalEl.textContent = `₹${formatNumber(subtotal)}`;
+  }
   fertilizerTotal.value = formatNumber(total);
 };
 
