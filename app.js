@@ -498,3 +498,15 @@ window.addEventListener("resize", setViewportHeight);
 window.addEventListener("orientationchange", setViewportHeight);
 window.addEventListener("resize", updateFooterHeight);
 window.addEventListener("orientationchange", updateFooterHeight);
+
+if (typeof module !== "undefined" && module.exports) {
+  module.exports = {
+    renderProducts,
+    formatNumber,
+    updateFertilizerTotal,
+    setupNumberInputs,
+    ensureActiveInput,
+    calcDiscount,
+    calcBreakdown
+  };
+}

@@ -1,0 +1,8 @@
+{
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "jsdom": "^29.0.0",
+    "jsdom-testing-mocks": "^1.16.0"
+  }
+}
