@@ -150,31 +150,35 @@ const calcBreakdown = () => {
   breakdownResult.value = formatNumber(perKg);
 };
 
+const createProductCard = (product, index) => {
+  const card = document.createElement("div");
+  card.className = "product-card";
+  card.dataset.index = index;
+
+  card.innerHTML = `
+    <div class="product-head">
+      <div class="product-title">Product ${index + 1}</div>
+      <div class="product-total" data-total>₹${formatNumber(product.price * product.weight)}</div>
+    </div>
+    <div class="product-row">
+      <div class="input-group">
+        <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" />
+        <span class="unit">₹</span>
+      </div>
+      <div class="input-group">
+        <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" />
+        <span class="unit">Kg</span>
+      </div>
+    </div>
+  `;
+
+  return card;
+};
+
 const renderProducts = (products) => {
   productList.innerHTML = "";
   products.forEach((product, index) => {
-    const card = document.createElement("div");
-    card.className = "product-card";
-    card.dataset.index = index;
-
-    card.innerHTML = `
-      <div class="product-head">
-        <div class="product-title">Product ${index + 1}</div>
-        <div class="product-total" data-total>₹${formatNumber(product.price * product.weight)}</div>
-      </div>
-      <div class="product-row">
-        <div class="input-group">
-          <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" />
-          <span class="unit">₹</span>
-        </div>
-        <div class="input-group">
-          <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" />
-          <span class="unit">Kg</span>
-        </div>
-      </div>
-    `;
-
-    productList.appendChild(card);
+    productList.appendChild(createProductCard(product, index));
   });
 
   setupNumberInputs();
@@ -220,14 +224,15 @@ productList.addEventListener("input", (event) => {
 
 addProductButton.addEventListener("click", () => {
   const cards = productList.querySelectorAll(".product-card");
+  const index = cards.length;
   const newProduct = { price: 0, weight: 0 };
-  renderProducts([
-    ...Array.from(cards).map((card) => ({
-      price: Number(card.querySelector("[data-field='price']").value) || 0,
-      weight: Number(card.querySelector("[data-field='weight']").value) || 0,
-    })),
-    newProduct,
-  ]);
+
+  const newCard = createProductCard(newProduct, index);
+  productList.appendChild(newCard);
+
+  setupNumberInputs(newCard);
+  updateFertilizerTotal();
+  ensureActiveInput();
 });
 
 const placeCaretFromEvent = (input, event) => {
@@ -276,8 +281,8 @@ const placeCaretFromEvent = (input, event) => {
   updateCaret(input);
 };
 
-const setupNumberInputs = () => {
-  document.querySelectorAll("input[data-number]").forEach((input) => {
+const setupNumberInputs = (container = document) => {
+  container.querySelectorAll("input[data-number]").forEach((input) => {
     if (input.dataset.keyboardReady) return;
     input.dataset.keyboardReady = "true";
     input.setAttribute("readonly", "readonly");
