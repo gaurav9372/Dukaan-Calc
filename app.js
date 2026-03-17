@@ -61,10 +61,16 @@ const updateCaret = (input) => {
   if (!group) return;
 
   const unit = group.querySelector(".unit");
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
 
-  const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
+  if (!input._cachedFont) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
+
+  const canvas =
+    updateCaret.canvas ||
+    (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.font = font;
@@ -73,7 +79,13 @@ const updateCaret = (input) => {
   const caretIndex = setCaretIndex(input, getCaretIndex(input));
   const textBefore = value.slice(0, caretIndex);
   const textWidth = ctx.measureText(textBefore).width;
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+
+  if (group._cachedPaddingLeft === undefined) {
+    group._cachedPaddingLeft =
+      parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = group._cachedPaddingLeft;
+
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
   const visibleWidth = input.clientWidth || 0;
@@ -187,7 +199,8 @@ const updateFertilizerTotal = () => {
   let total = 0;
   cards.forEach((card) => {
     const price = Number(card.querySelector("[data-field='price']").value) || 0;
-    const weight = Number(card.querySelector("[data-field='weight']").value) || 0;
+    const weight =
+      Number(card.querySelector("[data-field='weight']").value) || 0;
     const subtotal = price * weight;
     total += subtotal;
     const totalEl = card.querySelector("[data-total]");
@@ -235,16 +248,31 @@ const placeCaretFromEvent = (input, event) => {
   if (!group) return;
 
   const rect = group.getBoundingClientRect();
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+
+  if (group._cachedPaddingLeft === undefined) {
+    group._cachedPaddingLeft =
+      parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = group._cachedPaddingLeft;
+
   const unit = group.querySelector(".unit");
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
-  const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
+  const clickX = Math.min(
+    Math.max(event.clientX - rect.left, paddingLeft),
+    maxX,
+  );
   const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-  const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
+  if (!input._cachedFont) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
+
+  const canvas =
+    updateCaret.canvas ||
+    (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   ctx.font = font;
@@ -312,7 +340,9 @@ const ensureActiveInput = () => {
   }
   if (document.body.classList.contains("keyboard-visible")) {
     const activeScreen = document.querySelector(".screen.active");
-    const nextInput = activeScreen ? activeScreen.querySelector("input[data-number]") : null;
+    const nextInput = activeScreen
+      ? activeScreen.querySelector("input[data-number]")
+      : null;
     if (nextInput) {
       setActiveInput(nextInput);
     } else {
@@ -429,7 +459,9 @@ resetButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const target = button.dataset.reset;
     const screen = button.closest(".screen");
-    const firstInput = screen ? screen.querySelector("input[data-number]") : null;
+    const firstInput = screen
+      ? screen.querySelector("input[data-number]")
+      : null;
     if (target === "discount") {
       discountPrice.value = defaultDiscount.price;
       discountRate.value = defaultDiscount.rate;
@@ -453,7 +485,7 @@ const updateFooterHeight = () => {
   if (!footerEls.length) return;
   const maxHeight = footerEls.reduce(
     (max, el) => Math.max(max, el.offsetHeight),
-    0
+    0,
   );
   if (maxHeight > 0) {
     document.documentElement.style.setProperty("--footer-h", `${maxHeight}px`);
