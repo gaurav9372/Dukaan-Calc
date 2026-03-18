@@ -164,11 +164,11 @@ const renderProducts = (products) => {
       </div>
       <div class="product-row">
         <div class="input-group">
-          <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" />
+          <input type="text" value="${product.price}" data-field="price" data-number readonly inputmode="none" aria-label="Price for Product ${index + 1}" />
           <span class="unit">₹</span>
         </div>
         <div class="input-group">
-          <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" />
+          <input type="text" value="${product.weight}" data-field="weight" data-number readonly inputmode="none" aria-label="Weight for Product ${index + 1}" />
           <span class="unit">Kg</span>
         </div>
       </div>

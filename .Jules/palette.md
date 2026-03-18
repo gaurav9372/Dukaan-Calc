@@ -1,0 +1,3 @@
+## 2024-03-14 - Missing Context in Dynamic Inputs and Custom Keyboards
+**Learning:** In applications using custom on-screen keyboards and dynamic input grids (like the Fertilizer Calculator), native `readonly` inputs lose their inherent labeling context, making them difficult for screen-reader users to distinguish. Furthermore, custom styling often inadvertently strips default focus outlines from interactive elements like buttons.
+**Action:** Always explicitly add `aria-label` attributes to dynamically generated inputs inside lists or grids, binding them to their contextual row/item (e.g. `aria-label="Price for Product 1"`). Consistently apply `:focus-visible` to all buttons to ensure keyboard navigation remains accessible.
