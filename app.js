@@ -386,6 +386,40 @@ const handleKey = (key) => {
   updateCaret(activeInput);
 };
 
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+
+  const keyMap = {
+    Backspace: "backspace",
+    Enter: "enter",
+    Escape: "escape",
+  };
+
+  const key = keyMap[event.key] || event.key;
+
+  if (key === "escape") {
+    event.preventDefault();
+    activeInput.blur();
+    hideKeyboard();
+    return;
+  }
+
+  if (/^[0-9.]$/.test(key) || key === "backspace" || key === "enter") {
+    event.preventDefault();
+    if (key === "backspace") {
+      let value = activeInput.value;
+      let caretIndex = getCaretIndex(activeInput);
+      activeInput.value = "";
+      setCaretIndex(activeInput, 0);
+      syncInput(activeInput);
+      updateCaret(activeInput);
+      activeInput.value = value;
+      setCaretIndex(activeInput, caretIndex);
+    }
+    handleKey(key);
+  }
+});
+
 keyboard.addEventListener("pointerdown", (event) => {
   const button = event.target.closest("[data-key]");
   if (!button) return;
