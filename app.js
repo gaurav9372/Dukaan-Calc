@@ -428,6 +428,25 @@ keyboard.addEventListener("contextmenu", (event) => {
   event.preventDefault();
 });
 
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+  const keyMap = {
+    "Backspace": "backspace",
+    "Enter": "enter",
+    ".": ".",
+    "Decimal": "."
+  };
+  const key = event.key;
+  if (/^[0-9]$/.test(key) || keyMap[key]) {
+    event.preventDefault();
+    handleKey(keyMap[key] || key);
+  } else if (key === "Tab") {
+    // Let Tab behave normally or handle it via handleEnter if we want
+  } else if (key === "Escape") {
+    hideKeyboard();
+  }
+});
+
 document.addEventListener("pointerdown", (event) => {
   const group = event.target.closest(".input-group");
   if (!group) return;
