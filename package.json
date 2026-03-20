@@ -3,6 +3,6 @@
     "test": "node tests/test_app.js"
   },
   "devDependencies": {
-    "jsdom": "^29.0.0"
+    "jsdom": "^22.1.0"
   }
 }
