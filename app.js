@@ -386,6 +386,25 @@ const handleKey = (key) => {
   updateCaret(activeInput);
 };
 
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+
+  const key = event.key;
+  if (/^[0-9]$/.test(key) || key === ".") {
+    event.preventDefault();
+    handleKey(key);
+  } else if (key === "Backspace") {
+    event.preventDefault();
+    handleKey("backspace");
+  } else if (key === "Enter") {
+    event.preventDefault();
+    handleKey("enter");
+  } else if (key === "Escape") {
+    event.preventDefault();
+    hideKeyboard();
+  }
+});
+
 keyboard.addEventListener("pointerdown", (event) => {
   const button = event.target.closest("[data-key]");
   if (!button) return;
