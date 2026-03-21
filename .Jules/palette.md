@@ -1,0 +1,3 @@
+## 2026-03-21 - Physical Keyboard Support for Custom Inputs
+**Learning:** When creating custom on-screen keyboards and using `readonly` inputs with `inputmode="none"` to prevent the native mobile keyboard from appearing, physical keyboard interactions are entirely disabled. This severely impacts accessibility for users on desktop or those using physical keyboards on mobile devices.
+**Action:** Always map physical keydown events globally (e.g., `document.addEventListener('keydown')`) to the same internal key handling logic used by the custom on-screen keyboard when a custom input field is active.
