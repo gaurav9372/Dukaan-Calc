@@ -437,6 +437,29 @@ document.addEventListener("pointerdown", (event) => {
   placeCaretFromEvent(input, event);
 });
 
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+
+  const key = event.key;
+  if (/^[0-9]$/.test(key)) {
+    event.preventDefault();
+    handleKey(key);
+  } else if (key === "." || key === ",") {
+    event.preventDefault();
+    handleKey(".");
+  } else if (key === "Backspace") {
+    event.preventDefault();
+    handleKey("backspace");
+  } else if (key === "Enter") {
+    event.preventDefault();
+    handleKey("enter");
+  } else if (key === "Escape") {
+    event.preventDefault();
+    activeInput.blur();
+    hideKeyboard();
+  }
+});
+
 const resetButtons = document.querySelectorAll("[data-reset]");
 const footerEls = Array.from(document.querySelectorAll(".screen-footer"));
 resetButtons.forEach((button) => {

@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "test": "node tests/test_app.js"
+    "test": "node tests/test_app.js && node test_keyboard.js"
   },
   "devDependencies": {
-    "jsdom": "^29.0.0"
+    "jsdom": "^29.0.0",
+    "playwright": "^1.58.2"
   }
 }
