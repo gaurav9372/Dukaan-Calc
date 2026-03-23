@@ -61,8 +61,12 @@ const updateCaret = (input) => {
   if (!group) return;
 
   const unit = group.querySelector(".unit");
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+
+  if (!input._cachedFont) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
 
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
@@ -73,8 +77,17 @@ const updateCaret = (input) => {
   const caretIndex = setCaretIndex(input, getCaretIndex(input));
   const textBefore = value.slice(0, caretIndex);
   const textWidth = ctx.measureText(textBefore).width;
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
-  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+
+  if (group._cachedPaddingLeft === undefined) {
+    group._cachedPaddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = group._cachedPaddingLeft;
+
+  if (unit && unit._cachedOffsetWidth === undefined) {
+    unit._cachedOffsetWidth = unit.offsetWidth;
+  }
+  const unitWidth = unit ? unit._cachedOffsetWidth + 12 : 0;
+
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
   const visibleWidth = input.clientWidth || 0;
   const scrollLeft = Math.max(0, textWidth - (visibleWidth - 6));
@@ -174,6 +187,11 @@ const renderProducts = (products) => {
       </div>
     `;
 
+    // Cache DOM lookups directly on the card element
+    card._priceInput = card.querySelector("[data-field='price']");
+    card._weightInput = card.querySelector("[data-field='weight']");
+    card._totalEl = card.querySelector("[data-total]");
+
     productList.appendChild(card);
   });
 
@@ -183,15 +201,14 @@ const renderProducts = (products) => {
 };
 
 const updateFertilizerTotal = () => {
-  const cards = productList.querySelectorAll(".product-card");
+  // Use cached properties to avoid DOM lookups in calculation loop
   let total = 0;
-  cards.forEach((card) => {
-    const price = Number(card.querySelector("[data-field='price']").value) || 0;
-    const weight = Number(card.querySelector("[data-field='weight']").value) || 0;
+  Array.from(productList.children).forEach((card) => {
+    const price = Number(card._priceInput.value) || 0;
+    const weight = Number(card._weightInput.value) || 0;
     const subtotal = price * weight;
     total += subtotal;
-    const totalEl = card.querySelector("[data-total]");
-    totalEl.textContent = `₹${formatNumber(subtotal)}`;
+    card._totalEl.textContent = `₹${formatNumber(subtotal)}`;
   });
   fertilizerTotal.value = formatNumber(total);
 };
@@ -219,12 +236,11 @@ productList.addEventListener("input", (event) => {
 });
 
 addProductButton.addEventListener("click", () => {
-  const cards = productList.querySelectorAll(".product-card");
   const newProduct = { price: 0, weight: 0 };
   renderProducts([
-    ...Array.from(cards).map((card) => ({
-      price: Number(card.querySelector("[data-field='price']").value) || 0,
-      weight: Number(card.querySelector("[data-field='weight']").value) || 0,
+    ...Array.from(productList.children).map((card) => ({
+      price: Number(card._priceInput.value) || 0,
+      weight: Number(card._weightInput.value) || 0,
     })),
     newProduct,
   ]);
@@ -235,15 +251,28 @@ const placeCaretFromEvent = (input, event) => {
   if (!group) return;
 
   const rect = group.getBoundingClientRect();
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+
+  if (group._cachedPaddingLeft === undefined) {
+    group._cachedPaddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = group._cachedPaddingLeft;
+
   const unit = group.querySelector(".unit");
-  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+  if (unit && unit._cachedOffsetWidth === undefined) {
+    unit._cachedOffsetWidth = unit.offsetWidth;
+  }
+  const unitWidth = unit ? unit._cachedOffsetWidth + 12 : 0;
+
   const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
   const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
   const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  if (!input._cachedFont) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
+
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
