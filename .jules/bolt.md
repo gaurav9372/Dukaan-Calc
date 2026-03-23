@@ -1,0 +1,3 @@
+## 2024-05-24 - Layout Thrashing in Keyboard Repeat Events
+**Learning:** Calling `window.getComputedStyle` and reading properties like `offsetWidth` synchronously inside the 70ms key repeat loop (in `updateCaret` and `placeCaretFromEvent`) causes severe layout thrashing. The application uses a specific pattern of attaching element references and static computed styles directly to DOM nodes (e.g., `input._cachedFont`, `group._cachedPaddingLeft`) to avoid these expensive lookups.
+**Action:** Always cache static layout values and DOM element references directly on the DOM node objects if they are accessed inside fast-firing loops or rapid event handlers.
