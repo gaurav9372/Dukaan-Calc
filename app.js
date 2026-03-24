@@ -428,6 +428,29 @@ keyboard.addEventListener("contextmenu", (event) => {
   event.preventDefault();
 });
 
+document.addEventListener("keydown", (event) => {
+  if (event.ctrlKey || event.altKey || event.metaKey) return;
+
+  if (event.key === "Escape") {
+    hideKeyboard();
+    return;
+  }
+
+  const keyMap = {
+    "Enter": "enter",
+    "Backspace": "backspace",
+    ".": ".",
+    "0": "0", "1": "1", "2": "2", "3": "3", "4": "4",
+    "5": "5", "6": "6", "7": "7", "8": "8", "9": "9"
+  };
+
+  const mappedKey = keyMap[event.key];
+  if (mappedKey && document.body.classList.contains("keyboard-visible")) {
+    event.preventDefault();
+    handleKey(mappedKey);
+  }
+});
+
 document.addEventListener("pointerdown", (event) => {
   const group = event.target.closest(".input-group");
   if (!group) return;

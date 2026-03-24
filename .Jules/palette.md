@@ -1,0 +1,3 @@
+## 2024-03-24 - Physical Keyboard Support for Custom On-Screen Keyboards
+**Learning:** Setting `inputmode="none"` and `readonly` on input fields to force custom on-screen keyboards inadvertently breaks physical keyboard interaction, degrading the accessibility and experience for desktop users.
+**Action:** When implementing custom on-screen keyboards with readonly inputs, always provide a global `keydown` event listener to map physical key presses (e.g., 0-9, Backspace, Enter, Decimal) to the application's internal key handling logic.
