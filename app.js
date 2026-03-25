@@ -428,6 +428,25 @@ keyboard.addEventListener("contextmenu", (event) => {
   event.preventDefault();
 });
 
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+  const keyMap = {
+    "Enter": "enter",
+    "Backspace": "backspace",
+    "Delete": "backspace",
+    ".": ".",
+    ",": "."
+  };
+
+  if (keyMap[event.key]) {
+    event.preventDefault();
+    handleKey(keyMap[event.key]);
+  } else if (/^[0-9]$/.test(event.key)) {
+    event.preventDefault();
+    handleKey(event.key);
+  }
+});
+
 document.addEventListener("pointerdown", (event) => {
   const group = event.target.closest(".input-group");
   if (!group) return;
