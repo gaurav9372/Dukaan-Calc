@@ -391,11 +391,10 @@ keyboard.addEventListener("pointerdown", (event) => {
   if (!button) return;
   event.preventDefault();
   const key = button.dataset.key;
+  stopRepeat();
   repeatKey = key;
   handleKey(key);
 
-  clearTimeout(repeatTimeout);
-  clearInterval(repeatInterval);
   repeatTimeout = setTimeout(() => {
     repeatInterval = setInterval(() => {
       if (repeatKey === "backspace") {
