@@ -40,6 +40,15 @@ const hideKeyboard = () => {
   stopRepeat();
 };
 
+const getCanvasContext = (input) => {
+  const style = window.getComputedStyle(input);
+  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const canvas = getCanvasContext.canvas || (getCanvasContext.canvas = document.createElement("canvas"));
+  const ctx = canvas.getContext("2d");
+  if (ctx) ctx.font = font;
+  return ctx;
+};
+
 const syncInput = (input) => {
   input.dispatchEvent(new Event("input", { bubbles: true }));
 };
@@ -61,13 +70,8 @@ const updateCaret = (input) => {
   if (!group) return;
 
   const unit = group.querySelector(".unit");
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-
-  const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
-  const ctx = canvas.getContext("2d");
+  const ctx = getCanvasContext(input);
   if (!ctx) return;
-  ctx.font = font;
 
   const value = input.value || "";
   const caretIndex = setCaretIndex(input, getCaretIndex(input));
@@ -242,12 +246,8 @@ const placeCaretFromEvent = (input, event) => {
   const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
   const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
-  const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
-  const ctx = canvas.getContext("2d");
+  const ctx = getCanvasContext(input);
   if (!ctx) return;
-  ctx.font = font;
 
   const value = input.value || "";
   if (value.length === 0) {
