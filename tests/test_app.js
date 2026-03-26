@@ -11,6 +11,12 @@ const dom = new JSDOM(html, { runScripts: "outside-only" });
 const window = dom.window;
 const document = window.document;
 
+// Mock canvas for JSDOM
+window.HTMLCanvasElement.prototype.getContext = () => ({
+    measureText: () => ({ width: 0 }),
+    font: ''
+});
+
 // Execute the app.js script inside the jsdom environment
 window.eval(script);
 
@@ -61,6 +67,26 @@ assertEqual(formatNumber(NaN), "0", "Should handle NaN");
 assertEqual(formatNumber(null), "0", "Should handle null");
 assertEqual(formatNumber(undefined), "0", "Should handle undefined");
 assertEqual(formatNumber('invalid'), "0", "Should handle strings");
+
+console.log('\nRunning tests for keyboard navigation...\n');
+
+// Set active input for test
+const discountPriceInput = document.getElementById("discount-price");
+discountPriceInput.dataset.number = "";
+window.setActiveInput(discountPriceInput);
+
+document.dispatchEvent(new window.KeyboardEvent('keydown', { key: '1' }));
+assertEqual(discountPriceInput.value, '1', "Should handle physical '1' keydown");
+
+document.dispatchEvent(new window.KeyboardEvent('keydown', { key: '5' }));
+assertEqual(discountPriceInput.value, '15', "Should handle physical '5' keydown");
+
+document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Backspace' }));
+assertEqual(discountPriceInput.value, '1', "Should handle physical 'Backspace' keydown");
+
+document.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter' }));
+assertEqual(discountPriceInput.value, '1', "Value should remain unchanged on 'Enter'");
+
 
 console.log(`\nTests completed: ${passed} passed, ${failed} failed.`);
 if (failed > 0) {
