@@ -437,6 +437,15 @@ document.addEventListener("pointerdown", (event) => {
   placeCaretFromEvent(input, event);
 });
 
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+  const key = event.key.toLowerCase();
+  if (/^[0-9]$/.test(key) || key === "." || key === "backspace" || key === "enter") {
+    event.preventDefault();
+    handleKey(key);
+  }
+});
+
 const resetButtons = document.querySelectorAll("[data-reset]");
 const footerEls = Array.from(document.querySelectorAll(".screen-footer"));
 resetButtons.forEach((button) => {
@@ -516,4 +525,5 @@ window.addEventListener("orientationchange", updateFooterHeight);
 // For testing
 if (typeof window !== "undefined") {
   window.formatNumber = formatNumber;
+  window.setActiveInput = setActiveInput;
 }
