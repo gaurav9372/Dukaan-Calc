@@ -386,6 +386,23 @@ const handleKey = (key) => {
   updateCaret(activeInput);
 };
 
+document.addEventListener("keydown", (event) => {
+  if (!activeInput) return;
+  const keyMap = {
+    "Enter": "enter",
+    "Backspace": "backspace",
+    "Delete": "backspace",
+    ",": "."
+  };
+
+  const mappedKey = keyMap[event.key] || event.key.toLowerCase();
+
+  if (/^[0-9.]$/.test(mappedKey) || mappedKey === "enter" || mappedKey === "backspace") {
+    event.preventDefault();
+    handleKey(mappedKey);
+  }
+});
+
 keyboard.addEventListener("pointerdown", (event) => {
   const button = event.target.closest("[data-key]");
   if (!button) return;
