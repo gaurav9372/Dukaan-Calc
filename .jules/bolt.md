@@ -1,0 +1,3 @@
+## 2024-04-03 - Layout Thrashing with Custom On-Screen Keyboard
+**Learning:** The custom on-screen keyboard repeats key events every 70ms when held down. Synchronous layout recalculations like `window.getComputedStyle()` inside handlers like `updateCaret` and `placeCaretFromEvent` cause severe layout thrashing and performance degradation under rapid, repetitive execution.
+**Action:** Use a `WeakMap` cache to store and reuse static DOM properties (like computed fonts and element metrics). Invalidate this cache on `resize` and `orientationchange` events. This eliminates expensive synchronous layout calculations during high-frequency interaction loops.
