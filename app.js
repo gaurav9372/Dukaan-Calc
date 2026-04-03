@@ -151,7 +151,7 @@ const calcBreakdown = () => {
 };
 
 const renderProducts = (products) => {
-  productList.innerHTML = "";
+  const fragment = document.createDocumentFragment();
   products.forEach((product, index) => {
     const card = document.createElement("div");
     card.className = "product-card";
@@ -174,8 +174,9 @@ const renderProducts = (products) => {
       </div>
     `;
 
-    productList.appendChild(card);
+    fragment.appendChild(card);
   });
+  productList.replaceChildren(fragment);
 
   setupNumberInputs();
   updateFertilizerTotal();
