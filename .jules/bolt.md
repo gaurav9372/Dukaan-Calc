@@ -1,0 +1,3 @@
+## 2024-04-03 - Custom Caret Layout Thrashing
+**Learning:** Frequent calls to `getComputedStyle`, `offsetWidth`, and `clientWidth` during rapid events like `keydown` or custom on-screen keyboard strokes force the browser to synchronously recalculate layout, causing severe frame drops (layout thrashing).
+**Action:** Use a DOM caching layer by attaching static references and pre-computed styles directly to the DOM nodes (e.g., `input._cachedFont`). Use explicit `undefined` checks to safely retrieve these values, and create an `invalidateCaches` function triggered by `resize` or `orientationchange` events to keep them fresh.
