@@ -1,0 +1,3 @@
+## 2024-04-03 - Caching DOM Traversals and Computed Styles in Input Handling
+**Learning:** `updateCaret` and `placeCaretFromEvent` trigger synchronous layout thrashing on every key press by re-evaluating `window.getComputedStyle` and performing DOM traversals (`closest`).
+**Action:** Implement a DOM caching pattern by attaching element references (e.g., `_cachedGroup`) and static computed styles (e.g., `_cachedFont`) directly to the DOM nodes. Use explicit `undefined` checks (e.g., `if (input._cachedGroup === undefined)`) to safely handle falsy values and include an `invalidateCaches` function triggered by `resize` and `orientationchange` events.
