@@ -57,12 +57,22 @@ const setCaretIndex = (input, index) => {
 };
 
 const updateCaret = (input) => {
-  const group = input.closest(".input-group");
+  if (input._cachedGroup === undefined) {
+    input._cachedGroup = input.closest(".input-group");
+  }
+  const group = input._cachedGroup;
   if (!group) return;
 
-  const unit = group.querySelector(".unit");
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  if (input._cachedUnit === undefined) {
+    input._cachedUnit = group.querySelector(".unit");
+  }
+  const unit = input._cachedUnit;
+
+  if (input._cachedFont === undefined) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
 
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
@@ -73,7 +83,12 @@ const updateCaret = (input) => {
   const caretIndex = setCaretIndex(input, getCaretIndex(input));
   const textBefore = value.slice(0, caretIndex);
   const textWidth = ctx.measureText(textBefore).width;
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+
+  if (input._cachedPaddingLeft === undefined) {
+    input._cachedPaddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = input._cachedPaddingLeft;
+
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
   const visibleWidth = input.clientWidth || 0;
@@ -231,19 +246,34 @@ addProductButton.addEventListener("click", () => {
 });
 
 const placeCaretFromEvent = (input, event) => {
-  const group = input.closest(".input-group");
+  if (input._cachedGroup === undefined) {
+    input._cachedGroup = input.closest(".input-group");
+  }
+  const group = input._cachedGroup;
   if (!group) return;
 
   const rect = group.getBoundingClientRect();
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
-  const unit = group.querySelector(".unit");
+  if (input._cachedPaddingLeft === undefined) {
+    input._cachedPaddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = input._cachedPaddingLeft;
+
+  if (input._cachedUnit === undefined) {
+    input._cachedUnit = group.querySelector(".unit");
+  }
+  const unit = input._cachedUnit;
+
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
   const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
   const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  if (input._cachedFont === undefined) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
+
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -512,6 +542,17 @@ window.addEventListener("resize", setViewportHeight);
 window.addEventListener("orientationchange", setViewportHeight);
 window.addEventListener("resize", updateFooterHeight);
 window.addEventListener("orientationchange", updateFooterHeight);
+
+const invalidateCaches = () => {
+  document.querySelectorAll("input[data-number]").forEach((input) => {
+    input._cachedGroup = undefined;
+    input._cachedUnit = undefined;
+    input._cachedFont = undefined;
+    input._cachedPaddingLeft = undefined;
+  });
+};
+window.addEventListener("resize", invalidateCaches);
+window.addEventListener("orientationchange", invalidateCaches);
 
 // For testing
 if (typeof window !== "undefined") {
