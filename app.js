@@ -56,13 +56,37 @@ const setCaretIndex = (input, index) => {
   return clamped;
 };
 
+// ⚡ Bolt: Cache DOM properties to prevent layout thrashing in hot paths like keystroke handlers
+const inputCache = new WeakMap();
+const groupCache = new WeakMap();
+
 const updateCaret = (input) => {
-  const group = input.closest(".input-group");
+  let cacheInfo = inputCache.get(input);
+  if (!cacheInfo) {
+    cacheInfo = { group: input.closest(".input-group") };
+    inputCache.set(input, cacheInfo);
+  }
+  const group = cacheInfo.group;
   if (!group) return;
 
-  const unit = group.querySelector(".unit");
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  let groupInfo = groupCache.get(group);
+  if (!groupInfo) {
+    const unit = group.querySelector(".unit");
+    groupInfo = {
+      unitWidth: unit ? unit.offsetWidth + 12 : 0,
+      paddingLeft: parseFloat(window.getComputedStyle(group).paddingLeft) || 0
+    };
+    groupCache.set(group, groupInfo);
+  }
+
+  if (!cacheInfo.font) {
+    const style = window.getComputedStyle(input);
+    cacheInfo.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+
+  const font = cacheInfo.font;
+  const paddingLeft = groupInfo.paddingLeft;
+  const unitWidth = groupInfo.unitWidth;
 
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
@@ -73,8 +97,7 @@ const updateCaret = (input) => {
   const caretIndex = setCaretIndex(input, getCaretIndex(input));
   const textBefore = value.slice(0, caretIndex);
   const textWidth = ctx.measureText(textBefore).width;
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
-  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
   const visibleWidth = input.clientWidth || 0;
   const scrollLeft = Math.max(0, textWidth - (visibleWidth - 6));
@@ -231,19 +254,39 @@ addProductButton.addEventListener("click", () => {
 });
 
 const placeCaretFromEvent = (input, event) => {
-  const group = input.closest(".input-group");
+  let cacheInfo = inputCache.get(input);
+  if (!cacheInfo) {
+    cacheInfo = { group: input.closest(".input-group") };
+    inputCache.set(input, cacheInfo);
+  }
+  const group = cacheInfo.group;
   if (!group) return;
 
   const rect = group.getBoundingClientRect();
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
-  const unit = group.querySelector(".unit");
-  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+
+  let groupInfo = groupCache.get(group);
+  if (!groupInfo) {
+    const unit = group.querySelector(".unit");
+    groupInfo = {
+      unitWidth: unit ? unit.offsetWidth + 12 : 0,
+      paddingLeft: parseFloat(window.getComputedStyle(group).paddingLeft) || 0
+    };
+    groupCache.set(group, groupInfo);
+  }
+
+  if (!cacheInfo.font) {
+    const style = window.getComputedStyle(input);
+    cacheInfo.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+
+  const paddingLeft = groupInfo.paddingLeft;
+  const unitWidth = groupInfo.unitWidth;
+  const font = cacheInfo.font;
+
   const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
   const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
   const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -512,6 +555,17 @@ window.addEventListener("resize", setViewportHeight);
 window.addEventListener("orientationchange", setViewportHeight);
 window.addEventListener("resize", updateFooterHeight);
 window.addEventListener("orientationchange", updateFooterHeight);
+
+// ⚡ Bolt: Clear the DOM cache on resize so that properties are recomputed
+const invalidateCaches = () => {
+  document.querySelectorAll(".input-group").forEach(group => groupCache.delete(group));
+  document.querySelectorAll("input").forEach(input => {
+    const cacheInfo = inputCache.get(input);
+    if (cacheInfo) cacheInfo.font = undefined;
+  });
+};
+window.addEventListener("resize", invalidateCaches);
+window.addEventListener("orientationchange", invalidateCaches);
 
 // For testing
 if (typeof window !== "undefined") {
