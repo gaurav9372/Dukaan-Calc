@@ -57,12 +57,24 @@ const setCaretIndex = (input, index) => {
 };
 
 const updateCaret = (input) => {
-  const group = input.closest(".input-group");
+  // ⚡ Bolt Performance Optimization:
+  // Cache DOM element lookups directly on the input node to prevent expensive
+  // .closest() and .querySelector() calls during rapid input events.
+  if (input._cachedGroup === undefined) input._cachedGroup = input.closest(".input-group");
+  const group = input._cachedGroup;
   if (!group) return;
 
-  const unit = group.querySelector(".unit");
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  if (group._cachedUnit === undefined) group._cachedUnit = group.querySelector(".unit");
+  const unit = group._cachedUnit;
+
+  // ⚡ Bolt Performance Optimization:
+  // Cache computed styles to prevent layout thrashing (forced reflows)
+  // triggered by getComputedStyle during every keystroke.
+  if (input._cachedFont === undefined) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
 
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
@@ -73,8 +85,18 @@ const updateCaret = (input) => {
   const caretIndex = setCaretIndex(input, getCaretIndex(input));
   const textBefore = value.slice(0, caretIndex);
   const textWidth = ctx.measureText(textBefore).width;
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
-  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+
+  // ⚡ Bolt Performance Optimization:
+  // Cache padding and offsetWidth to prevent further layout thrashing
+  if (group._cachedPaddingLeft === undefined) {
+    group._cachedPaddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = group._cachedPaddingLeft;
+  if (unit && unit._cachedOffsetWidth === undefined) {
+    unit._cachedOffsetWidth = unit.offsetWidth;
+  }
+  const unitWidth = unit ? unit._cachedOffsetWidth + 12 : 0;
+
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
   const visibleWidth = input.clientWidth || 0;
   const scrollLeft = Math.max(0, textWidth - (visibleWidth - 6));
@@ -231,19 +253,35 @@ addProductButton.addEventListener("click", () => {
 });
 
 const placeCaretFromEvent = (input, event) => {
-  const group = input.closest(".input-group");
+  // ⚡ Bolt Performance Optimization: Use the same cached DOM nodes and styles here
+  if (input._cachedGroup === undefined) input._cachedGroup = input.closest(".input-group");
+  const group = input._cachedGroup;
   if (!group) return;
 
   const rect = group.getBoundingClientRect();
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
-  const unit = group.querySelector(".unit");
-  const unitWidth = unit ? unit.offsetWidth + 12 : 0;
+  if (group._cachedPaddingLeft === undefined) {
+    group._cachedPaddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  }
+  const paddingLeft = group._cachedPaddingLeft;
+
+  if (group._cachedUnit === undefined) group._cachedUnit = group.querySelector(".unit");
+  const unit = group._cachedUnit;
+
+  if (unit && unit._cachedOffsetWidth === undefined) {
+    unit._cachedOffsetWidth = unit.offsetWidth;
+  }
+  const unitWidth = unit ? unit._cachedOffsetWidth + 12 : 0;
+
   const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
   const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
   const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  if (input._cachedFont === undefined) {
+    const style = window.getComputedStyle(input);
+    input._cachedFont = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  }
+  const font = input._cachedFont;
+
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -517,3 +555,18 @@ window.addEventListener("orientationchange", updateFooterHeight);
 if (typeof window !== "undefined") {
   window.formatNumber = formatNumber;
 }
+
+// ⚡ Bolt Performance Optimization:
+// Invalidate caches on resize/orientationchange to ensure computed styles
+// and dimensions update correctly when the layout changes.
+const invalidateCaches = () => {
+  document.querySelectorAll("input[data-number], .input-group, .unit").forEach(el => {
+    el._cachedGroup = undefined;
+    el._cachedUnit = undefined;
+    el._cachedFont = undefined;
+    el._cachedPaddingLeft = undefined;
+    el._cachedOffsetWidth = undefined;
+  });
+};
+window.addEventListener("resize", invalidateCaches);
+window.addEventListener("orientationchange", invalidateCaches);

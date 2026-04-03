@@ -1,0 +1,3 @@
+## 2025-04-03 - DOM Caching for Performance
+**Learning:** Mutating DOM elements directly to store cache values (e.g., `input._cachedGroup`) can be an anti-pattern, but in vanilla JS projects without a framework state, it's a pragmatic way to avoid layout thrashing from repeated `getComputedStyle` and `closest` calls on every keystroke. It's critical to invalidate these caches on `resize` or `orientationchange` since computed styles assume CSS won't change dynamically otherwise.
+**Action:** Always pair DOM element caching (especially computed styles) with a robust cache invalidation mechanism hooked to viewport resizing events to prevent subtle UI bugs later. Add clear comments marking these as performance optimizations.
