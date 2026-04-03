@@ -1,0 +1,3 @@
+## 2025-02-14 - Prevent Layout Thrashing in Caret Calculations
+**Learning:** Calling `window.getComputedStyle(input)` and `input.closest(".input-group")` rapidly in event handlers (`updateCaret` and `placeCaretFromEvent`) causes significant layout thrashing. Since the visual structure and font of these elements do not change frequently (only on window resize), repeated style/DOM lookups create an unnecessary performance bottleneck when typing.
+**Action:** Implemented a DOM caching pattern by attaching the calculated style and reference nodes directly to the element (`el._cachedFont`, `el._cachedGroup`). An explicit `undefined` check is used to cache falsy values, and caches are explicitly cleared (`invalidateCaches`) on `resize` or `orientationchange` events.

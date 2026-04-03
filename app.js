@@ -50,6 +50,27 @@ const getCaretIndex = (input) => {
   return input.value.length;
 };
 
+// ⚡ Bolt: Helper to cache expensive DOM lookups and layout computations on the element itself.
+const getCached = (el, key, fn) => {
+  if (el[key] === undefined) {
+    el[key] = fn();
+  }
+  return el[key];
+};
+
+// ⚡ Bolt: Clears cached DOM and style references when visual layout might change.
+const invalidateCaches = () => {
+  document.querySelectorAll("input[data-number]").forEach((input) => {
+    const group = input._cachedGroup;
+    if (group) {
+      delete group._cachedUnit;
+      delete group._cachedPaddingLeft;
+    }
+    delete input._cachedGroup;
+    delete input._cachedFont;
+  });
+};
+
 const setCaretIndex = (input, index) => {
   const clamped = Math.max(0, Math.min(index, input.value.length));
   input.dataset.caretIndex = String(clamped);
@@ -57,12 +78,15 @@ const setCaretIndex = (input, index) => {
 };
 
 const updateCaret = (input) => {
-  const group = input.closest(".input-group");
+  // ⚡ Bolt: Cache closest input group lookup to prevent layout thrashing
+  const group = getCached(input, "_cachedGroup", () => input.closest(".input-group"));
   if (!group) return;
 
-  const unit = group.querySelector(".unit");
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const unit = getCached(group, "_cachedUnit", () => group.querySelector(".unit"));
+  const font = getCached(input, "_cachedFont", () => {
+    const style = window.getComputedStyle(input);
+    return `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  });
 
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
@@ -73,7 +97,7 @@ const updateCaret = (input) => {
   const caretIndex = setCaretIndex(input, getCaretIndex(input));
   const textBefore = value.slice(0, caretIndex);
   const textWidth = ctx.measureText(textBefore).width;
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
+  const paddingLeft = getCached(group, "_cachedPaddingLeft", () => parseFloat(window.getComputedStyle(group).paddingLeft) || 0);
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, group.clientWidth - unitWidth - 6);
   const visibleWidth = input.clientWidth || 0;
@@ -231,19 +255,22 @@ addProductButton.addEventListener("click", () => {
 });
 
 const placeCaretFromEvent = (input, event) => {
-  const group = input.closest(".input-group");
+  // ⚡ Bolt: Cache closest input group lookup
+  const group = getCached(input, "_cachedGroup", () => input.closest(".input-group"));
   if (!group) return;
 
   const rect = group.getBoundingClientRect();
-  const paddingLeft = parseFloat(window.getComputedStyle(group).paddingLeft) || 0;
-  const unit = group.querySelector(".unit");
+  const paddingLeft = getCached(group, "_cachedPaddingLeft", () => parseFloat(window.getComputedStyle(group).paddingLeft) || 0);
+  const unit = getCached(group, "_cachedUnit", () => group.querySelector(".unit"));
   const unitWidth = unit ? unit.offsetWidth + 12 : 0;
   const maxX = Math.max(paddingLeft, rect.width - unitWidth - 6);
   const clickX = Math.min(Math.max(event.clientX - rect.left, paddingLeft), maxX);
   const relativeX = Math.max(0, clickX - paddingLeft + input.scrollLeft);
 
-  const style = window.getComputedStyle(input);
-  const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  const font = getCached(input, "_cachedFont", () => {
+    const style = window.getComputedStyle(input);
+    return `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+  });
   const canvas = updateCaret.canvas || (updateCaret.canvas = document.createElement("canvas"));
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
@@ -512,6 +539,9 @@ window.addEventListener("resize", setViewportHeight);
 window.addEventListener("orientationchange", setViewportHeight);
 window.addEventListener("resize", updateFooterHeight);
 window.addEventListener("orientationchange", updateFooterHeight);
+
+window.addEventListener("resize", invalidateCaches);
+window.addEventListener("orientationchange", invalidateCaches);
 
 // For testing
 if (typeof window !== "undefined") {
