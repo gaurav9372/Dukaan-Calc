@@ -1,0 +1,3 @@
+## 2025-02-28 - Custom Keyboard Layout Thrashing
+**Learning:** In the custom keyboard `repeatInterval`, doing `window.getComputedStyle` and `querySelector` every 70ms on long key presses (like backspacing a long number) caused layout thrashing and severe main thread blocking, as styles were repeatedly re-calculated unnecessarily.
+**Action:** Implemented a DOM caching pattern by attaching DOM elements (`_cachedGroup`) and static computed properties (`_cachedFont`, `_cachedPaddingLeft`, `_cachedUnitWidth`) directly to the DOM nodes. Reset them to `undefined` on `resize` or `orientationchange` events instead of recalculating per keystroke.
