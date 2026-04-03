@@ -151,7 +151,11 @@ const calcBreakdown = () => {
 };
 
 const renderProducts = (products) => {
-  productList.innerHTML = "";
+  // ⚡ Bolt Performance Optimization:
+  // Using DocumentFragment to batch DOM insertions in memory and replaceChildren for a single atomic update.
+  // This reduces layout thrashing and avoids the performance hit of clearing innerHTML and repeated appendChild calls.
+  const fragment = document.createDocumentFragment();
+
   products.forEach((product, index) => {
     const card = document.createElement("div");
     card.className = "product-card";
@@ -174,8 +178,10 @@ const renderProducts = (products) => {
       </div>
     `;
 
-    productList.appendChild(card);
+    fragment.appendChild(card);
   });
+
+  productList.replaceChildren(fragment);
 
   setupNumberInputs();
   updateFertilizerTotal();
